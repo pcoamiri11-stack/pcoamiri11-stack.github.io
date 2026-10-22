@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "io.github.pcoamiri11stack.pcoprep",
+        "sha256_cert_fingerprints": ["8F:E3:09:02:9B:28:B5:4E:11:1F:6B:3E:69:D0:2E:EA:08:D1:33:B3:D0:A3:35:3C:B6:16:CE:05:95:0F:5F:C3"]
+      }
+    }]
