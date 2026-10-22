@@ -1,0 +1,1138 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Practice for the London PCO (private hire) SERU and topographical assessments.">
+<meta name="theme-color" content="#14202a">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png" type="image/png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<title>PCO Prep London</title>
+<style>
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html,body{margin:0}
+img{max-width:100%}
+</style>
+<style>
+/* Layout: kerbside study app. Sticky top bar, tabbed views, one column of cards; map views scroll sideways inside their own frame on phones. */
+:root{
+  --bg:#eef1f3; --surface:#ffffff; --sunk:#e4e8ec; --ink:#14202a; --muted:#56636e; --line:#d3dae0;
+  --accent:#f2c200; --accent-ink:#7a5d00; --on-accent:#14202a;
+  --go:#1d8048; --go-soft:#dff2e6; --stop:#c0352a; --stop-soft:#fbe4e1; --info:#2457a6; --info-soft:#e2ebf8;
+  --block:#e2e5dc; --road:#ffffff; --road-edge:#b4bcc3; --park:#cfe5c6; --map-ink:#3b4852; --aroad:#1e6b3c;
+  --f-display:"Roboto Condensed","sans-serif-condensed","Arial Narrow",Arial,sans-serif;
+  --f-body:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+  --r:10px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0e1418; --surface:#162027; --sunk:#1c2830; --ink:#e6ecef; --muted:#95a3ae; --line:#2a3741;
+  --accent:#f2c200; --accent-ink:#f5d24e; --on-accent:#14202a;
+  --go:#46c37a; --go-soft:#173a26; --stop:#ff7468; --stop-soft:#42201d; --info:#79a5f2; --info-soft:#1a2b45;
+  --block:#1b252c; --road:#3a4752; --road-edge:#56636e; --park:#1f3a29; --map-ink:#c9d3da; --aroad:#3fae6a;
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0e1418; --surface:#162027; --sunk:#1c2830; --ink:#e6ecef; --muted:#95a3ae; --line:#2a3741;
+  --accent:#f2c200; --accent-ink:#f5d24e; --on-accent:#14202a;
+  --go:#46c37a; --go-soft:#173a26; --stop:#ff7468; --stop-soft:#42201d; --info:#79a5f2; --info-soft:#1a2b45;
+  --block:#1b252c; --road:#3a4752; --road-edge:#56636e; --park:#1f3a29; --map-ink:#c9d3da; --aroad:#3fae6a;
+  color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.5}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--ink)}
+.wrap{max-width:980px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0;line-height:1.15}
+h2{font-size:1.6rem;font-weight:800}
+h3{font-size:1.1rem;font-weight:800}
+p{margin:0}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,a:focus-visible,.node:focus-visible{outline:3px solid var(--info);outline-offset:2px}
+a{color:var(--info)}
+.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+
+/* Top bar */
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--ink);color:var(--bg)}
+.bar .wrap{display:flex;align-items:center;gap:16px;padding-block:10px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--f-display);font-weight:800;font-size:1.15rem;letter-spacing:.01em;white-space:nowrap}
+.brand .lines{width:26px;height:14px;display:grid;gap:3px}
+.brand .lines i{display:block;height:3px;background:var(--accent);border-radius:2px}
+.tabs{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;flex:1;min-width:0}
+.tabs::-webkit-scrollbar{display:none}
+@media (max-width:640px){.tabs{flex-basis:100%}.bar .wrap{gap:6px}}
+.tab{background:none;border:0;color:inherit;opacity:.72;padding:8px 12px;border-radius:8px;white-space:nowrap;font-weight:700;font-size:.95rem}
+.tab:hover{opacity:1}
+.tab[aria-selected="true"]{opacity:1;background:var(--accent);color:var(--on-accent)}
+
+main{padding-block:24px 64px}
+.view{display:grid;gap:20px}
+.eyebrow{font-family:var(--f-mono);font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.lede{color:var(--muted);max-width:62ch}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:20px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:16px}
+.facts{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;margin-top:12px;font-size:.95rem}
+.facts dt{color:var(--muted)}
+.facts dd{margin:0;font-weight:700}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1px solid var(--line);background:var(--surface);padding:10px 16px;border-radius:8px;font-weight:700;min-height:44px}
+.btn:hover{border-color:var(--muted)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.btn.primary:hover{filter:brightness(1.05)}
+.btn.quiet{background:transparent}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.spread{display:flex;gap:12px;flex-wrap:wrap;align-items:center;justify-content:space-between}
+.note{font-size:.88rem;color:var(--muted)}
+.kerb{height:6px;background:repeating-linear-gradient(90deg,var(--accent) 0 28px,transparent 28px 40px);border-radius:3px;opacity:.9}
+
+/* chips */
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{border:1px solid var(--line);background:var(--surface);padding:6px 12px;border-radius:999px;font-size:.88rem;font-weight:700}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.pill{display:inline-block;padding:2px 10px;border-radius:999px;font-size:.8rem;font-weight:700}
+.pill.pass{background:var(--go-soft);color:var(--go)}
+.pill.fail{background:var(--stop-soft);color:var(--stop)}
+.pill.neutral{background:var(--sunk);color:var(--muted)}
+
+/* progress meters */
+.meters{display:grid;gap:10px;margin-top:12px}
+.meter{display:grid;grid-template-columns:minmax(0,1fr) 56px;gap:4px 10px;align-items:center;font-size:.9rem}
+.meter .track{grid-column:1/-1;height:8px;background:var(--sunk);border-radius:4px;overflow:hidden}
+.meter .fill{height:100%;background:var(--go);border-radius:4px}
+.meter .fill.low{background:var(--stop)}
+.meter .fill.mid{background:var(--accent)}
+.meter .val{text-align:right;font-family:var(--f-mono);font-size:.82rem;color:var(--muted)}
+
+/* question */
+.q{display:grid;gap:14px}
+.qmeta{display:flex;gap:8px;flex-wrap:wrap;align-items:center;font-size:.82rem;color:var(--muted)}
+.qtext{font-size:1.18rem;font-weight:700;line-height:1.4;max-width:62ch}
+.gap{display:inline-block;min-width:4.5em;border-bottom:3px solid var(--accent);text-align:center;padding:0 4px}
+.passage{background:var(--sunk);border-radius:8px;padding:14px 16px;font-size:.98rem;max-width:66ch}
+.opts{display:grid;gap:8px}
+.opt{text-align:left;border:1.5px solid var(--line);background:var(--surface);border-radius:8px;padding:12px 14px;display:flex;gap:12px;align-items:flex-start;min-height:48px}
+.opt:hover:not([disabled]){border-color:var(--muted)}
+.opt .k{font-family:var(--f-mono);font-weight:700;color:var(--muted);flex:none;width:1.2em}
+.opt.sel{border-color:var(--info);background:var(--info-soft)}
+.opt.right{border-color:var(--go);background:var(--go-soft)}
+.opt.wrong{border-color:var(--stop);background:var(--stop-soft)}
+.opt[disabled]{cursor:default}
+.explain{border-left:4px solid var(--go);padding:10px 14px;background:var(--sunk);border-radius:0 8px 8px 0;font-size:.95rem}
+.explain.bad{border-left-color:var(--stop)}
+.explain b{display:block;margin-bottom:2px}
+.timer{font-family:var(--f-mono);font-weight:700;font-size:1.1rem;padding:4px 12px;border-radius:8px;background:var(--ink);color:var(--accent)}
+.timer.low{color:var(--stop);background:var(--stop-soft)}
+.qnav{display:flex;gap:4px;flex-wrap:wrap}
+.qdot{width:30px;height:30px;border-radius:6px;border:1px solid var(--line);background:var(--surface);font-family:var(--f-mono);font-size:.75rem;padding:0}
+.qdot.done{background:var(--info-soft);border-color:var(--info)}
+.qdot.cur{outline:2px solid var(--ink)}
+.big{font-family:var(--f-display);font-weight:800;font-size:3.2rem;line-height:1}
+.confirm{border:1.5px solid var(--accent);background:var(--sunk);border-radius:8px;padding:12px 14px;display:grid;gap:10px}
+
+/* study notes */
+details.sec{border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+details.sec summary{padding:12px 16px;font-weight:700;cursor:pointer;display:flex;justify-content:space-between;gap:10px}
+details.sec ul{margin:0;padding:0 16px 14px 34px;display:grid;gap:6px;font-size:.95rem}
+details.sec .pg{font-family:var(--f-mono);font-size:.75rem;color:var(--muted);white-space:nowrap}
+
+/* map */
+.maplayout{display:grid;grid-template-columns:minmax(0,1fr);gap:16px}
+.mapframe{position:relative;height:min(66vh,600px);border:1px solid var(--line);border-radius:var(--r);background:var(--block);overflow:hidden;touch-action:none}
+.mapframe.small{height:min(52vh,420px)}
+.mapframe svg{display:block;width:100%;height:100%;cursor:grab;user-select:none;-webkit-user-select:none}
+.mapframe svg:active{cursor:grabbing}
+.zoom{position:absolute;right:max(10px,env(safe-area-inset-right,0px));top:10px;display:grid;gap:6px}
+.zoom button{width:42px;height:42px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font-weight:800;font-size:1.2rem;box-shadow:0 1px 3px rgba(0,0,0,.15)}
+.dirs.exam{list-style:none;padding:0;margin:10px 0 0}
+.dirs.exam li{display:grid;grid-template-columns:4.2em 1fr;gap:8px;padding:5px 0;border-bottom:1px dashed var(--line)}
+.dirs.exam .turn{font-weight:700;color:var(--accent-ink)}
+table.marks{width:100%;border-collapse:collapse;margin-top:10px;font-size:.93rem}
+table.marks td{padding:7px 0;border-bottom:1px solid var(--line);vertical-align:top}
+table.marks td:last-child{text-align:right;white-space:nowrap;padding-left:12px}
+.task{font-size:1.05rem;font-weight:700}
+.task .start{color:var(--go)} .task .end{color:var(--stop)}
+.closure{display:inline-block;margin-top:6px;background:var(--stop-soft);color:var(--stop);font-weight:700;padding:3px 10px;border-radius:6px;font-size:.92rem}
+.dirs{margin:0;padding-left:1.4em;display:grid;gap:4px;font-size:.95rem}
+.dirs li::marker{font-family:var(--f-mono);color:var(--muted)}
+.toast{padding:10px 14px;border-radius:8px;font-size:.93rem;font-weight:700}
+.toast.bad{background:var(--stop-soft);color:var(--stop)}
+.toast.good{background:var(--go-soft);color:var(--go)}
+.toast.info{background:var(--info-soft);color:var(--info)}
+.legend{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px 14px;font-size:.85rem}
+.legend div{display:flex;gap:8px;align-items:center}
+.legend svg{flex:none}
+.node{cursor:pointer}
+.node:hover .hit{fill:var(--info);fill-opacity:.18}
+.score{font-family:var(--f-display);font-weight:800;font-size:2rem}
+
+/* exam-style route screen (fixed colours, like the test software) */
+.exam{display:grid;grid-template-columns:250px minmax(0,1fr);gap:0;background:#fff;color:#111;border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+@media (max-width:760px){.exam{grid-template-columns:minmax(0,1fr)}}
+.exam-instr{padding:18px 18px;font-size:1.02rem;line-height:1.38;display:grid;gap:10px;align-content:start;background:#fff;color:#111}
+.exam-instr p,.exam-instr ol{margin:0}
+.exam-instr ol{padding-left:1.3em;display:grid;gap:8px}
+.exam-q{font-size:1.12rem}
+.exam-q .start{color:#15803d}.exam-q .end{color:#c8001a}
+.exam-closed{font-weight:700;color:#c8001a}
+@media (max-width:760px){.exam-instr{font-size:.95rem;padding:14px 16px}.exam-instr ol,.exam-instr>p:not(.exam-q):not(.exam-closed){display:none}}
+.exam-main{display:grid;grid-template-rows:auto 1fr auto;min-width:0;background:#14104f}
+.exam-bar{display:flex;gap:6px;flex-wrap:wrap;padding:6px;background:#14104f;align-items:center}
+.eb{border:0;border-radius:2px;color:#fff;font-family:Arial,Helvetica,sans-serif;font-weight:700;font-size:.95rem;letter-spacing:.02em;padding:10px 16px;min-height:44px}
+.eb.go{background:#16a34a}.eb.stop{background:#e8141c}.eb.undo{background:#2f8fe0}.eb.clear{background:#b01c25}.eb.dim{background:#3b4352}.eb.dim2{background:#3c5064}
+.eb[disabled],.ebw[disabled]{opacity:.45;cursor:not-allowed}
+.ebw{border:1px solid #9aa3ad;background:#f4f4f4;color:#111;font-family:Arial,Helvetica,sans-serif;font-weight:700;font-size:1rem;padding:8px 18px;min-height:44px;border-radius:2px}
+.ebw.strong{background:#ffd200;border-color:#ffd200}
+.eb-note{color:#fff;font-weight:700;padding:0 8px}
+.exam-map{border:0;border-radius:0;height:min(64vh,620px)}
+.exam-map.drawing svg{cursor:crosshair}
+.drawtag{position:absolute;left:10px;top:10px;background:#e8141c;color:#fff;font:700 .8rem Arial,sans-serif;padding:4px 8px;border-radius:2px;pointer-events:none}
+footer{color:var(--muted);font-size:.85rem;padding-block:0 40px}
+@media (prefers-reduced-motion:no-preference){.opt,.btn,.chip{transition:background-color .15s,border-color .15s}}
+</style>
+</head>
+<body>
+<header class="bar"><div class="wrap">
+  <div class="brand"><span class="lines"><i></i><i></i></span>PCO Prep London</div>
+  <nav class="tabs" role="tablist" aria-label="Sections">
+    <button class="tab" role="tab" data-view="home">Overview</button>
+    <button class="tab" role="tab" data-view="seru">SERU practice</button>
+    <button class="tab" role="tab" data-view="mock">SERU mock test</button>
+    <button class="tab" role="tab" data-view="routes">Route planning</button>
+    <button class="tab" role="tab" data-view="topo">Topo mock</button>
+    <button class="tab" role="tab" data-view="london">London knowledge</button>
+  </nav>
+</div></header>
+
+<main class="wrap">
+  <section class="view" id="v-home" hidden></section>
+  <section class="view" id="v-seru" hidden></section>
+  <section class="view" id="v-mock" hidden></section>
+  <section class="view" id="v-routes" hidden></section>
+  <section class="view" id="v-topo" hidden></section>
+  <section class="view" id="v-london" hidden></section>
+</main>
+<footer class="wrap"><a href="privacy.html">Privacy policy</a> · Independent practice tool. Not made by or connected to Transport for London. SERU questions are written from TfL's PHV Driver's Handbook (version 1.0, September 2021). Rules change, so always check the current handbook and TfL guidance before your test.</footer>
+<script>
+/* SERU sections from the PHV Driver's Handbook v1.0 */
+const SECTIONS={
+  lic:"1 Driver licensing", veh:"2 Vehicle licensing", jour:"3 Private hire journeys", safe:"4 Staying safe",
+  beh:"5 Driver behaviour", park:"6 Driving and parking", drive:"7 Safer driving", eq:"8 Equality and disability",
+  sg:"9 Safeguarding", rs:"10 Ridesharing"
+};
+/* [section, type, question, [correct, wrong, wrong, wrong], explanation, handbook page]
+   type: m = multiple choice, g = complete the sentence (____ marks the gap), r = reading and understanding */
+const BANK=[
+["lic","m","What is the minimum age to apply for a London PHV driver's licence?",["21","18","23","25"],"You must be at least 21. There is no upper age limit.",6],
+["lic","m","How long must you have held a full driving licence before applying?",["At least 3 years","At least 1 year","At least 2 years","At least 5 years"],"You need a full DVLA, NI, EU or EEA licence held for at least three years.",6],
+["lic","m","How long does a London PHV driver's licence normally last?",["3 years","1 year","2 years","5 years"],"A driver's licence normally lasts three years. Note the vehicle licence is different: one year.",7],
+["lic","g","You must wear your badge at all times when working, including while you are ____ for bookings.",["waiting","parking","refuelling","resting"],"The badge must be worn whenever you work as a PHV driver, including waiting for bookings and driving to a pick-up.",7],
+["lic","m","A police officer asks to see your PHV licence and you don't have it with you. What is the latest you can show it?",["Within 7 days","Within 24 hours","Within 14 days","Within 28 days"],"Show it there and then, or within seven days at most, to a police officer or TfL Authorised Officer.",7],
+["lic","m","Your badge is stolen. What should you do?",["Report it to TfL immediately and to the police, and get a crime reference number","Keep working and report it at your next renewal","Borrow a colleague's badge until a new one arrives","Tell your operator only"],"Report a lost or stolen badge to TfL immediately. If stolen, also tell the police and get a crime reference number. You cannot work without a badge.",8],
+["lic","m","Who does your PHV badge and licence belong to?",["TfL","You","Your operator","The DVLA"],"They remain TfL property, even after they expire, and must be returned.",8],
+["lic","g","The badge includes ____ so that passengers with sight loss can check your licence number.",["Braille","a QR code","a hologram","a barcode"],"Badges carry Braille so passengers can note your licence number.",8],
+["lic","m","From what age do you need a medical with every licence renewal application?",["45","40","50","60"],"From 45 a medical is needed at each renewal. From 65 it becomes every year.",8],
+["lic","m","From what age do you need a medical assessment every year?",["65","60","70","75"],"From 65 you need an annual medical assessment.",8],
+["lic","g","You must tell TfL within ____ days if you change your home address.",["21","7","14","28"],"Tell TfL within 21 days, and tell the DVLA too.",9],
+["lic","m","You are diagnosed with a condition that may affect your driving. When must you tell TfL?",["Immediately","At your next renewal","Within 21 days","Only if your operator asks"],"New medical conditions that could affect your driving must be reported to TfL immediately.",8],
+["lic","m","Which of these must you report to TfL immediately?",["Being arrested, charged, convicted or cautioned for any offence","A parking ticket with no penalty points","A complaint you sorted out with the passenger","Changing your mobile phone number"],"Any arrest, charge, conviction or caution must be reported to TfL immediately.",10],
+["lic","m","Do you have to report a parking PCN that carries no penalty points?",["No, but frequent PCNs may lead to licensing action","Yes, within 7 days","Yes, immediately","Only if it is over £100"],"PCNs without points need not be reported, but a pattern of them can lead to action.",10],
+["lic","m","You are arrested. Can you rely on the police to tell TfL?",["No, you must tell TfL yourself","Yes, the police always inform TfL","Yes, if you are not charged","Only if the arrest happened while working"],"The handbook says not to rely on the police. Report it yourself.",10],
+["lic","m","Your PHV licence is revoked. When must you return it?",["Within 7 days","Within 24 hours","Within 21 days","Only when TfL writes again"],"A revoked licence must be returned within seven days.",10],
+["lic","m","Which medical standard must PHV drivers meet?",["DVLA Group 2","DVLA Group 1","No medical standard","An eyesight check only"],"PHV drivers must meet DVLA Group 2 medical standards.",6],
+["lic","g","The English language requirement for PHV drivers is level ____ of the CEFR.",["B1","A2","B2","C1"],"Speaking and listening are tested separately; reading and writing are shown by passing SERU.",6],
+["lic","m","TfL writes to you about a complaint. Why should you reply?",["TfL can only decide using the information it receives","Replying is optional","The operator will reply for you","It only matters if the passenger was injured"],"Respond to TfL complaint letters: TfL makes its decision on the information it has.",10],
+
+["veh","m","How long does a PHV vehicle licence last?",["1 year","6 months","3 years","5 years"],"A vehicle licence lasts one year. A new licensing inspection is needed before the next one is issued.",12],
+["veh","m","When does a vehicle licensing inspection need to be done?",["Before each new vehicle licence is issued","Every three years","Only when the car is sold","Only after a collision"],"Vehicle licences last one year, and another inspection is needed before a new licence is issued.",12],
+["veh","g","PHV licence discs are displayed on the front and ____ windscreens.",["rear","side","roof","passenger"],"Discs go on the front and rear windscreens.",12],
+["veh","m","Can you take the licence discs off when using the car privately?",["No, they must not be removed","Yes, at weekends","Yes, if the operator agrees","Yes, if you put them in the glovebox"],"Discs must not be damaged, altered or removed, even for private use.",12],
+["veh","m","Your vehicle's discs are damaged. What happens?",["The vehicle cannot be used for PHV work and the owner must contact TfL","You can carry on if the licence number is readable","You must stop working for 7 days","The operator replaces them"],"A vehicle with missing or badly damaged discs cannot be used for PHV work. The owner contacts TfL immediately.",12],
+["veh","g","The vehicle owner must tell TfL within ____ hours of a collision that affects safety, performance, appearance or comfort.",["72","24","48","96"],"Collisions must be reported within 72 hours.",13],
+["veh","m","What type of insurance must be valid while the vehicle is used as a PHV?",["Hire or reward","Social, domestic and pleasure only","Commuting cover","Third party, fire and theft only"],"Hire or reward insurance must be valid whenever the vehicle is licensed and used as a PHV.",13],
+["veh","m","After a collision, who can ask for your insurance details?",["The police, and passengers or members of the public involved","Only the police","Only TfL","Nobody"],"Insurance details must be shown to police on request and given to passengers or the public after a collision.",13],
+
+["jour","m","Who can you accept PHV bookings from?",["A licensed London PHV operator","Anyone who approaches you","Hotel or restaurant staff","Any app on your phone"],"Only accept bookings from a licensed London PHV operator, in a licensed PHV.",14],
+["jour","m","How can you check an operator is licensed?",["Use TfL's licence checker","Ask other drivers","Look for a logo on their website","Call the DVLA"],"The TfL licence checker is a public register of drivers, vehicles and operators.",14],
+["jour","g","A PHV is not a ____, so you cannot pick up passengers in the street without a booking.",["taxi","bus","coach","van"],"PHVs may not pick up on the street, at stations or at airports unless booked.",14],
+["jour","m","Someone waves you down outside a station and asks for a ride. What can you do?",["Explain you need a booking, and give them a card with your operator's number","Take them if they pay in cash","Take them if it is raining","Let them in and book the trip once they are seated"],"Never let a passenger in before the booking is received. You may hand out your operator's card.",14],
+["jour","m","Which of these does the operator NOT need to record for a booking?",["The passenger's date of birth","The passenger's name","The pick-up time and place","The main destination"],"Records include booking and journey date, passenger name, pick-up time and place, main destination, fare, driver and vehicle.",14],
+["jour","m","Approaching people outside a late-night venue to offer them a ride is:",["Not allowed and may be an offence","Allowed after midnight","Allowed if you show your badge","Allowed if the venue agrees"],"Do not approach people outside venues to offer PHV services. This may be an offence.",15],
+["jour","m","Can you use the taxi ranks at Heathrow or London City Airport?",["No, they are for licensed taxis only","Yes, when no taxis are waiting","Yes, with a booking","Yes, at night"],"Airport taxi ranks are for licensed taxis only.",16],
+["jour","m","Where should you wait for an airport pick-up?",["In an official car park (or Heathrow's PHV Authorised Vehicle Area)","In a nearby residential street","On the taxi rank","At a bus stop"],"Use official car parks. Don't wait in local car parks or residential streets.",15],
+["jour","m","A London operator accepts a booking from London to Brighton. Can you do it?",["Yes, journeys outside London are fine if a licensed London operator accepted them","No, PHVs must stay inside Greater London","Only if the passenger lives in London","Only with TfL's written permission"],"Journeys to or from outside Greater London are allowed when accepted by a licensed London operator.",16],
+["jour","m","Who sets the fare for a PHV journey?",["The operator agrees or estimates it before the journey","TfL","The driver at the end of the journey","The passenger"],"TfL cannot set PHV fares. The operator agrees or estimates the fare beforehand.",16],
+["jour","m","During a journey the passenger wants to go somewhere else. What should you do?",["Tell your operator as soon as it is safe","Ignore it and finish the original trip","Charge whatever you think is fair","Stop the trip and ask them to rebook"],"Tell the operator about destination changes, extra passengers or extra luggage as soon as it is safe.",16],
+["jour","g","After every journey, check the vehicle, including the ____, for lost property.",["boot","glovebox","bonnet","roof"],"Check the whole vehicle, including the boot, after every journey.",16],
+["jour","m","You find a suspicious unattended item in your vehicle. What should you do?",["Call 999","Open it to check","Take it to your operator's office","Put it in the boot"],"For a suspicious item, call 999.",17],
+["jour","m","What is the confidential anti-terrorist hotline number?",["0800 789 321","0800 555 111","0808 800 5000","101"],"The anti-terrorist hotline is 0800 789 321. 0800 555 111 is Crimestoppers.",17],
+["jour","m","Can you refuse a booking because the passenger has an assistance dog?",["No","Yes, if the journey is short","Yes, if you don't like dogs","Yes, if the dog has no jacket"],"You must not refuse disabled passengers or passengers with assistance dogs (unless you hold a medical exemption).",17],
+["jour","m","If you have a very good reason to refuse an accepted booking, what should you do?",["Be polite, explain, and give the operator full reasons","Drive off without saying anything","Ask the passenger to cancel","Charge a refusal fee"],"Refuse politely, explain, and give the operator your full reasons.",17],
+
+["safe","m","Before a passenger gets in, what should you check?",["Their name and destination","Their photo ID","Their payment card","Their age"],"Confirm the passenger's name and destination before they get in.",18],
+["safe","m","A passenger is too drunk to confirm where they are going. What can you do?",["Refuse, or ask that a friend travels with them or confirms the destination","You must take them anyway","Let them sleep in the car","Drop them at the nearest station"],"You may refuse a passenger who can't confirm their destination or walk because of drink or drugs, or insist a friend comes or confirms.",19],
+["safe","m","Which of these can be a warning sign of aggression?",["Clenched fists and a raised voice","Looking at their phone","Asking about the route","Quiet conversation"],"Warning signs include tapping fingers, crossed arms, clenched fists, staring and raised voices.",19],
+["safe","m","You can't calm a passenger who is becoming violent. What should you do?",["Stop somewhere safe, turn off the engine, take the keys and get out","Argue back so they know who is in charge","Drive faster to finish the journey","Lock them in the car"],"Get away: stop safely, engine off, take the keys and get out. If safe, lock the doors and drive away.",20],
+["safe","m","Which number do you call to report a hate crime that is not an emergency?",["101","999","111","0800 789 321"],"Report to the police on 101, or 999 in an emergency.",18],
+["safe","m","A passenger is unconscious and nobody else can help. What do you do?",["Call 999 and stay until help arrives","Leave them at a hospital entrance","Call their friends and leave","Carry on to the destination"],"Call 999 and stay with them until help arrives.",19],
+["safe","g","Record every incident, including near ____.",["misses","collisions","journeys","routes"],"Record incidents and near misses: time, place, people, witnesses, injuries and action taken.",21],
+["safe","m","Your PHV has CCTV. Where must the TfL CCTV sign go?",["Where passengers can see it as they get in and during the trip, without blocking your view","On the rear bumper","In the boot","It is not needed if passengers are told verbally"],"Display the CCTV sign where passengers can see it, without obstructing the driver's view.",22],
+["safe","m","Why might CCTV help reduce insurance premiums?",["Recordings can be useful evidence","It makes the car faster","It replaces your licence discs","It is required by the DVLA"],"CCTV recordings can be useful evidence.",21],
+["safe","m","You don't have a lone worker device. What does the handbook suggest?",["Ask your operator for one","Buy a dashcam instead","Never work alone","Carry a weapon"],"Carry a lone worker device, or ask your operator for one.",18],
+["safe","m","When should you find out your operator's procedure for reporting incidents?",["In advance, before you need it","Only after an incident","At licence renewal","Never, it's the operator's job"],"Know how to report before anything happens.",21],
+
+["beh","m","Can you use a passenger's phone number after the trip to ask how they are?",["No, contact details are only for the booked journey","Yes, if they were friendly","Yes, within 24 hours","Yes, if the operator agrees"],"Only use a passenger's details for the booked journey.",23],
+["beh","m","When can you get into the back seat while passengers are in the vehicle?",["Only in an emergency","When it's raining","To help with luggage","Whenever the passenger invites you"],"Do not get into the back with passengers except in an emergency.",24],
+["beh","m","A passenger becomes seriously ill and you are not first-aid trained. What should you do?",["Call 999 at once and only give first aid if trained or instructed","Give them medication you carry","Drive them to hospital at speed","Wait to see if they recover"],"Call 999 straight away. Don't give first aid unless trained or instructed.",24],
+["beh","g","Any sexual behaviour with a passenger is unacceptable, even if it is ____.",["agreed","brief","private","joking"],"Sexual behaviour with a passenger is never acceptable, even when agreed, and you will lose your licence.",24],
+["beh","m","A passenger offers sex instead of paying the fare. This is:",["Prohibited and unacceptable","Acceptable if the passenger suggested it","A matter for the operator only","Acceptable outside working hours"],"Offering or accepting sex in place of a fare is prohibited.",25],
+["beh","m","Who must keep records of all complaints?",["The operator","The driver","TfL only","The police"],"Operators must keep records of all complaints.",23],
+["beh","m","A complaint suggests a crime may have been committed. What must the operator do?",["Report it to the police","Deal with it privately","Ignore it if the passenger is calm","Wait for TfL to ask"],"Operators must report complaints involving possible crimes to the police.",23],
+["beh","m","Joking about a passenger's religion or sexual orientation is:",["Never acceptable","Fine if they laugh","Fine on short trips","Fine if you know them"],"Never comment on or joke about age, race, religion, disability, sexual orientation or gender identity.",23],
+["beh","m","Why might TfL suspend or revoke your licence after complaints?",["A serious complaint, several complaints, or a pattern of poor behaviour","Any single minor complaint","Only if the passenger was injured","Only after a court case"],"TfL can act on a serious complaint, multiple complaints, or a pattern of poor behaviour.",23],
+
+["park","m","Can a PHV drive in a bus lane?",["No","Yes, outside peak hours","Yes, with a passenger on board","Yes, if late for a booking"],"PHVs are not allowed to drive in bus lanes.",26],
+["park","m","Can you wait on a taxi rank?",["No, it can lead to a fine and licensing action","Yes, if no taxis are there","Yes, for up to 5 minutes","Yes, at night"],"PHVs may not park, wait, pick up or drop off on a taxi rank.",26],
+["park","m","Can you use a taxi-only electric charge point?",["No","Yes, at night","Yes, if fully electric","Yes, for 30 minutes"],"PHVs may not use or park at taxi-only charge points.",26],
+["park","m","On red or yellow lines, what can you do?",["Pick up or drop off, but not wait","Wait for up to 20 minutes","Park while the passenger shops","Nothing at all"],"You may pick up and set down on red and yellow lines, loading bays and most parking bays, but not wait.",27],
+["park","m","When can you stop on zig-zag lines?",["Never","To drop off quickly","At night","For a wheelchair user"],"Never stop on zig-zag lines.",26],
+["park","g","On a red route you may stop to use a cashpoint between 10pm and 6am for no more than ____ minutes.",["5","2","10","20"],"The red-route cashpoint exception is 22:00 to 06:00, maximum 5 minutes.",30],
+["park","m","A passenger asks you to wait on a yellow line while they use a shop. What is the risk?",["You can still get a PCN for waiting","None, passengers can ask you to wait","Only a warning","Your passenger gets the fine"],"Waiting in a restricted area can bring a PCN even if the passenger asked you to wait.",28],
+["park","m","Should you leave the engine running while waiting?",["No","Yes, to keep the car warm","Yes, if the wait is under 10 minutes","Only for electric cars"],"Do not leave the engine running while waiting.",28],
+["park","m","Where should you set down passengers?",["Close to the kerb, never in the middle of the road","Wherever they ask, even mid-road","In bus stops","On zig-zag lines if quick"],"Pull in close to the kerb. Never set down in the middle of the road.",28],
+["park","m","On a red route, a bus stop is marked with a wide red line. Can you stop there?",["No","Yes, to drop off","Yes, at night","Yes, for 2 minutes"],"Don't stop at bus stops marked with a wide red line on red routes.",29],
+["park","m","How can you tell a red route parking bay?",["It has a 'P' sign showing the time limits","It is painted green","It has a blue line","It has zig-zag lines"],"Red route bays are marked with a P. Obey the time limits on the sign.",30],
+["park","m","Can you receive a PCN without an officer or a ticket on your windscreen?",["Yes, cameras can detect it and it is sent to the registered keeper","No, there must be an officer","Only on red routes","Only in the City of London"],"PCNs can be sent by post after camera detection.",29],
+["park","m","Which PHVs are exempt from the Congestion Charge on London-operator bookings?",["Designated wheelchair-accessible PHVs","All PHVs","Electric PHVs only","PHVs with CCTV"],"Designated wheelchair-accessible PHVs (s.167 Equality Act list) are exempt for London-operator bookings.",30],
+["park","g","To avoid the ULEZ charge, diesel PHVs must meet the Euro ____ standard.",["6","4","5","3"],"Diesel PHVs must be Euro 6; petrol PHVs Euro 4.",30],
+["park","m","What ULEZ standard must a petrol PHV meet?",["Euro 4","Euro 6","Euro 3","Euro 5"],"Petrol: Euro 4. Diesel: Euro 6.",30],
+
+["drive","m","You need to make a call while working. What should you do?",["Stop safely, park and turn the engine off","Use the phone while in slow traffic","Use speakerphone while holding it","Call at traffic lights"],"Stop safely, park, and turn off the engine first.",31],
+["drive","m","Is using a hand-held phone legal while you queue in stationary traffic?",["No","Yes, if the engine is off","Yes, for under a minute","Yes, for navigation"],"Hand-held use is illegal while driving, including in queues.",32],
+["drive","g","A hand-held phone may only be used while driving to call 999 in an emergency when it is unsafe or impractical to ____.",["stop","indicate","brake","reverse"],"The only exception is an emergency call when stopping is unsafe or impractical.",32],
+["drive","g","The area of the windscreen cleared by the wipers is called the ____ area.",["swept","safe","driving","clear"],"Putting a device in the swept area is an offence that can bring a fine and points.",33],
+["drive","m","Who must make sure children under 14 wear a seatbelt or use a child seat?",["The driver","The child's parent only","The operator","Nobody in a PHV"],"Drivers are responsible for under-14s being belted or in an approved child seat.",32],
+["drive","m","There is no suitable child seat. A child aged 2 is travelling. Where may they sit?",["In a rear seat without a seatbelt","In the front seat on a lap","In the front with an adult belt","They cannot travel at all"],"Without the correct child seat, under-3s may travel only in a rear seat, unbelted.",32],
+["drive","m","There is no suitable child seat. A child aged 6 is travelling. What should happen?",["They sit in a rear seat using an adult seatbelt","They sit in the front without a belt","They sit on an adult's lap","They cannot travel"],"Children aged 3 or over may use an adult belt in a rear seat.",32],
+["drive","m","The traffic light is red. Can you enter the advanced stop line box for cyclists?",["No, it can bring a fine and points","Yes, if no cyclists are there","Yes, to turn left","Yes, in a PHV"],"Do not enter the cyclists' box when the light is red.",35],
+["drive","m","A cyclist is riding in the middle of the lane ahead. What should you do?",["Wait behind them","Overtake closely","Sound your horn","Flash your lights"],"Wait behind a cyclist in the middle of the lane; give them as much room as a car.",35],
+["drive","m","Compared with private car drivers, PHV drivers are how likely to be in a collision that kills or seriously injures a cyclist?",["Almost twice as likely","Less likely","About the same","Ten times as likely"],"PHV drivers are almost twice as likely to be involved.",34],
+["drive","m","When should a tyre be replaced?",["When the tread reaches the wear bar indicators","Every 6 months","At every licence inspection","When it is completely smooth"],"Replace tyres when the tread reaches the wear bars.",37],
+["drive","m","Before a passenger opens a door, what should happen?",["You and the passenger check for cyclists","Nothing, it's their responsibility","You sound the horn","You open it for them from outside"],"Ask passengers to check for cyclists before opening doors, and check yourself.",33],
+["drive","m","How should you drive in heavy rain or thick fog?",["Reduce your speed","Keep the same speed","Use hazard lights while moving","Drive closer to the car in front"],"Slow down in heavy rain and fog.",34],
+["drive","m","What can be shown in the vehicle windows?",["No unapproved signs or advertising","Any advertising you like","Operator adverts only","Signs if they are small"],"Windows must be free from unapproved signage or advertising.",37],
+
+["eq","m","How many protected characteristics are there under the Equality Act?",["9","5","7","11"],"Age, disability, gender reassignment, marriage and civil partnership, race, religion or belief, sex, sexual orientation, pregnancy and maternity.",40],
+["eq","m","Which of these is NOT a protected characteristic?",["The football team someone supports","Pregnancy and maternity","Religion or belief","Age"],"Football allegiance is not one of the nine protected characteristics.",40],
+["eq","m","A disabled passenger is travelling with a companion. Who should you speak to?",["The disabled passenger directly","The companion only","Nobody","The operator"],"Speak to the disabled or older passenger, not their companion.",38],
+["eq","g","Always ask passengers whether they need help, and wait for your offer to be ____.",["accepted","repeated","paid for","written down"],"Offer help, then wait for it to be accepted.",38],
+["eq","m","How should you guide a passenger with sight loss?",["Let them hold your arm or elbow; never pull or push","Hold them by the wrist","Push gently from behind","Let them find their own way"],"They may hold your arm or elbow. Never pull or push.",38],
+["eq","m","How should you give change to a passenger with sight loss?",["State the fare clearly and put the change into their hand","Leave it on the seat","Give it to another passenger","Keep it as a tip"],"Say the fare clearly and place the change in their hand.",39],
+["eq","m","Choosing a pick-up spot for a wheelchair user, what should you avoid?",["Sloped pavements","Wide pavements","Quiet streets","Dropped kerbs"],"Avoid sloped pavements for wheelchair users.",39],
+["eq","m","A designated wheelchair-accessible PHV carries a wheelchair user. Can you charge extra?",["No","Yes, a set fee","Yes, if it takes longer","Yes, at night"],"You must carry them in their wheelchair, give reasonable help, and not charge extra.",40],
+["eq","m","Where can an assistance dog sit?",["In the footwell","In the boot","On the front seat","Outside in a carrier"],"Assistance dogs travel in the footwell. Don't stroke, feed or distract them.",41],
+["eq","m","A dog is not wearing a jacket but the passenger says it is an assistance dog. What should you know?",["Assistance dogs may not always wear a jacket","Without a jacket it can be refused","You can charge extra","The dog must go in the boot"],"Assistance dogs may not always wear a jacket.",41],
+["eq","m","On what grounds can a driver be exempt from carrying assistance dogs?",["Medical reasons only, such as an allergy, asthma or phobia","Religious reasons","Personal preference","Keeping the car clean"],"Exemptions are for medical reasons only, applied for through TfL.",42],
+["eq","m","A driver has a TfL exemption from carrying assistance dogs. What must they do?",["Display the Exemption Notice in the windscreen","Tell passengers verbally","Carry a doctor's letter only","Nothing"],"An exempt driver displays the Exemption Notice.",43],
+["eq","m","Who investigates Equality Act complaints about PHV drivers?",["TfL","The operator only","The DVLA","The passenger's council"],"TfL investigates and may prosecute, suspend or revoke.",43],
+["eq","m","In 2002, what did the Shariat Council confirm?",["Trained assistance dogs may travel in vehicles driven by Muslims","Dogs must ride in the boot","Drivers may refuse dogs for religious reasons","Assistance dogs need a jacket"],"The Shariat Council confirmed trained assistance dogs may accompany disabled people in PHVs driven by Muslims.",42],
+
+["sg","m","For safeguarding purposes, who is a child?",["Anyone under 18","Anyone under 16","Anyone under 14","Anyone under 21"],"A child is anyone under 18.",43],
+["sg","m","Who is an adult at risk?",["Someone over 18 who needs extra care and support and can't protect themselves","Anyone over 65","Anyone travelling alone at night","Anyone who has been drinking"],"An adult at risk is over 18, needs extra care and support, and can't protect themselves due to age, disability or mental illness.",43],
+["sg","g","Safeguarding means protecting children and adults at risk from harm and ____.",["abuse","traffic","weather","debt"],"Safeguarding is protecting children and adults at risk from harm and abuse.",43],
+["sg","m","What is county lines?",["Criminal exploitation of children and young adults to sell drugs across areas","A type of bus lane","Boundary lines on a map","A licensing zone"],"Young people are exploited to move and sell drugs, often by train, taxi or PHV.",44],
+["sg","g","County lines is the criminal exploitation of children and young adults to ____ drugs.",["sell","test","destroy","report"],"Gangs use young people to move and sell drugs.",44],
+["sg","m","You are booked to carry an unaccompanied child. What must you know?",["The name of the adult meeting the child","The child's school","The child's date of birth","Nothing extra"],"The operator must know about it and you must know who is meeting the child.",44],
+["sg","m","Which of these could be a safeguarding warning sign?",["A young person picked up from a hotel at an odd hour to meet someone they met online","A family going to the airport","A commuter going to work","A student going to university"],"Odd-hour pick-ups at hotels and meeting people met online can be warning signs.",45],
+["sg","m","You suspect a child is at risk but it isn't an emergency. What should you do?",["Report to your operator and the police on 101, and keep a dated note","Confront the adult","Do nothing unless sure","Post about it online"],"Report to your operator and police (101; 999 in an emergency) and keep a dated record.",45],
+["sg","m","Which number lets you report a crime anonymously?",["Crimestoppers, 0800 555 111","NSPCC, 0808 800 5000","101","0800 789 321"],"Crimestoppers takes anonymous reports on 0800 555 111.",46],
+["sg","m","What is the NSPCC helpline number?",["0808 800 5000","0800 555 111","08000 121 700","0800 789 321"],"NSPCC: 0808 800 5000.",46],
+["sg","m","What is the Modern Slavery Helpline number?",["08000 121 700","0808 800 5000","0800 555 111","101"],"Modern Slavery Helpline: 08000 121 700.",46],
+
+["rs","m","What is ridesharing?",["Unrelated passengers paying separate fares and sharing a vehicle","A family sharing one fare","Two drivers sharing one car","Lending your PHV to a friend"],"Ridesharing is unrelated people with separate fares sharing a vehicle.",46],
+["rs","g","Ridesharing journeys must be booked through a licensed London PHV ____.",["operator","driver","passenger","council"],"Ridesharing must go through a licensed London operator.",46],
+["rs","m","Why might ridesharing happen?",["Passengers with similar routes and times choose to share","The driver decides to fill the car","TfL requires it at night","Passengers are forced to share"],"People with similar routes and times may choose to share.",46],
+["rs","m","A ridesharing passenger asks where the other passenger lives. What do you do?",["Never share one passenger's details with another","Tell them if they ask politely","Share it if they're friends","Give the postcode only"],"Never share passengers' details with each other.",47],
+["rs","m","What should you do when you pick up a ridesharing passenger?",["Confirm they booked a shared trip and explain the other pick-ups, route, time and cost","Nothing special","Ask for extra money","Ask them to sit in the front"],"Confirm the booking type and explain the shared journey.",47],
+["rs","m","What is a particular risk of ridesharing?",["Passengers can learn where others live or work and their routines","Higher fuel use","Longer licence checks","More parking tickets"],"Shared trips can reveal home addresses, workplaces and routines.",46],
+["rs","m","A ridesharing passenger wants to leave and take a private PHV instead. What happens?",["They can, at a point on the route","They must finish the shared trip","They pay a cancellation fine to you","You must refuse"],"A passenger can ask to leave and arrange a non-shared PHV on the route.",47],
+
+["jour","r",{p:"Operator notice: From 1 June, any item left in a vehicle must be logged in the driver app within one hour of being found. Phones, wallets and bags containing ID must be handed in at our office on the same day. Other items can be kept for up to three days before handing in.",q:"At 11pm you find a wallet on the back seat. According to the notice, what must you do?"},["Log it within one hour and hand it in the same day","Log it within one hour and keep it for up to three days","Hand it in within three days without logging it","Post it back to the passenger"],"Wallets must be logged within an hour and handed in on the same day.",16],
+["lic","r",{p:"Letter from TfL: We have received a complaint about a journey on 3 March. Please send us your account of what happened within 14 days of the date of this letter. If we do not hear from you, we will make a decision using the information we already have.",q:"What will happen if the driver does not reply within 14 days?"},["TfL will decide using the information it already has","The complaint will be closed","The driver will be given another 14 days","The operator will reply instead"],"The letter says TfL will make a decision using the information it already has.",10],
+["sg","r",{p:"Operator message: Before your next shift, you must complete the online safeguarding awareness course. If you have already completed it, upload your certificate in the driver app by Friday. Drivers who have not done either will not receive bookings until their certificate has been checked.",q:"A driver finished the course last year. What must they do?"},["Upload their certificate in the app by Friday","Take the course again before their next shift","Nothing at all","Phone the operator on Friday"],"Drivers who have already completed it must upload the certificate by Friday.",43],
+["park","r",{p:"Street sign: Red route. No stopping 7am to 7pm, Monday to Saturday, except in marked bays. Loading bay: 10am to 4pm, maximum stay 20 minutes, no return within 1 hour.",q:"According to the sign, when can the loading bay be used?"},["10am to 4pm, for up to 20 minutes","7am to 7pm, for up to 1 hour","Any time on Sundays only","10am to 4pm, for up to 1 hour"],"The loading bay applies 10am to 4pm with a 20-minute maximum.",30],
+["eq","r",{p:"Booking note: Passenger travels with a guide dog and uses a folding walking frame. Please collect from the side entrance, where the pavement is flat. Passenger would like the driver to say when the vehicle has arrived outside the door.",q:"Why has the passenger asked to be collected from the side entrance?"},["The pavement there is flat","It is closer to the road","The front entrance is closed","There is a taxi rank there"],"The note says the side entrance has a flat pavement.",39]
+];
+
+/* Study notes: key facts per section, with handbook pages */
+const NOTES={
+ lic:[["Age 21+, no upper limit; full licence held 3+ years",6],["DVLA Group 2 medical; enhanced DBS check",6],["English at B1: speaking/listening tested separately, reading/writing via SERU",6],["Driver licence lasts 3 years",7],["Wear your badge whenever working, including waiting for bookings",7],["Show licence to police/TfL officer: now, or within 7 days",7],["Lost/stolen badge: tell TfL immediately; if stolen, police + crime reference",8],["Badge and licence are TfL property; return when no longer licensed",8],["Medical at each renewal from 45; every year from 65",8],["New medical condition: tell TfL immediately",8],["Change of address: TfL within 21 days (and DVLA)",9],["Arrest, charge, conviction, caution, points: tell TfL immediately; don't rely on police",10],["PCNs without points: no need to report",10],["Revoked licence: return within 7 days",10]],
+ veh:[["Vehicle licence lasts 1 year; inspection before each new one",12],["Discs on front and rear windscreens; never removed, even for private use",12],["Collision affecting safety/appearance/comfort: owner tells TfL within 72 hours",13],["Hire or reward insurance whenever licensed and used as a PHV",13]],
+ jour:[["Bookings only from licensed London PHV operators (check TfL licence checker)",14],["No street pick-ups, no touting; you may hand out your operator's card",14],["Booking records: dates, name, pick-up time/place, destination, fare, driver, vehicle",14],["Airports: official car parks only; taxi ranks are taxis only",15],["Out-of-London trips fine if accepted by a London operator",16],["Operator agrees or estimates the fare beforehand",16],["Check whole car incl. boot for lost property after every trip",16],["Suspicious item: 999. Anti-terror hotline 0800 789 321",17],["Never refuse disabled passengers or assistance dogs",17]],
+ safe:[["Check name and destination before the passenger gets in",18],["Hate crime: police on 101 (999 in emergency)",18],["Drunk/drugged passenger who can't confirm destination: may refuse or involve a friend",19],["Unconscious/injured passenger: 999 and stay",19],["Can't calm it: stop safely, engine off, keys, get out",20],["Record incidents and near misses",21],["CCTV sign visible to passengers, not blocking your view",22]],
+ beh:[["Passenger details only for the booked journey",23],["Operators keep all complaint records; report possible crimes to police",23],["No back seat except in emergencies",24],["Serious illness: 999; first aid only if trained or instructed",24],["Any sexual behaviour is unacceptable, even if agreed",24]],
+ park:[["No driving in bus lanes",26],["No waiting/stopping on taxi ranks or taxi charge points",26],["Never stop on zig-zags",26],["Red/yellow lines: pick up or drop off, but don't wait",27],["Don't leave engine running; set down close to the kerb",28],["Red route: cashpoint stop 22:00–06:00, max 5 minutes",30],["No stopping at wide red/yellow line bus stops",29],["ULEZ: petrol Euro 4, diesel Euro 6",30],["Congestion Charge applies unless a designated wheelchair-accessible PHV",29]],
+ drive:[["Calls: stop, park, engine off. Hand-held use illegal even in queues",31],["Swept area = area cleared by wipers; no devices there",33],["Driver responsible for under-14s' belts/child seats",32],["No child seat: under 3 rear seat unbelted; 3+ rear seat with adult belt",32],["Stay out of the advanced stop line box on red",35],["PHV drivers almost twice as likely to be in a KSI collision with a cyclist",34],["Tyres: replace at wear bar indicators",37]],
+ eq:[["Nine protected characteristics",40],["Offer help and wait for it to be accepted; speak to the passenger",38],["Sight loss: they hold your arm or elbow; change into their hand",38],["Avoid sloped pavements for wheelchair users",39],["Wheelchair PHVs: carry in chair, help, no extra charge",40],["Assistance dogs: accept, footwell, no extra charge, may not wear a jacket",41],["Exemptions: medical only, display Exemption Notice",42]],
+ sg:[["Child = under 18. Adult at risk = 18+, needs care, can't protect themselves",43],["County lines: exploiting young people to sell drugs",44],["Unaccompanied child: know who is meeting them",44],["Report to operator and police (101 / 999); keep a dated note",45],["Crimestoppers 0800 555 111 · NSPCC 0808 800 5000 · Modern Slavery 08000 121 700",46]],
+ rs:[["Unrelated passengers, separate fares, via a licensed London operator",46],["Confirm each passenger booked a shared trip; explain pick-ups, route, time, cost",47],["Never share passengers' details",47],["A passenger may leave and book a private PHV en route",47]]
+};
+
+/* London knowledge */
+const ROADS=[["A1","Holloway Road"],["A2","Old Kent Road"],["A3","Clapham Road"],["A4","Cromwell Road"],["A5","Edgware Road"],["A10","Kingsland Road"],["A11","Mile End Road"],["A12","Eastern Avenue"],["A13","Commercial Road"],["A23","Brixton Road"],["A24","Balham High Road"],["A40","Westway"],["A41","Finchley Road"],["A406","North Circular Road"],["A205","South Circular Road"],["A501","Euston Road"],["A4202","Park Lane"],["A102","Blackwall Tunnel Approach"],["A316","Chertsey Road"]];
+const PLACES=[["British Museum","Bloomsbury"],["Tate Modern","Bankside"],["Natural History Museum","South Kensington"],["Royal Albert Hall","Kensington"],["St Paul's Cathedral","City of London"],["Tower of London","Tower Hill"],["Houses of Parliament","Westminster"],["The Shard","London Bridge"],["Wembley Stadium","Wembley"],["The O2","North Greenwich"],["Emirates Stadium","Holloway"],["Lord's Cricket Ground","St John's Wood"],["The Oval","Kennington"],["Royal Observatory","Greenwich"],["Kew Gardens","Kew"],["ExCeL London","Custom House"],["Battersea Power Station","Nine Elms"],["Alexandra Palace","Wood Green"],["London Stadium","Stratford"],["Camden Market","Camden Town"],["Harrods","Knightsbridge"],["Madame Tussauds","Marylebone"],["Royal London Hospital","Whitechapel"],["Great Ormond Street Hospital","Bloomsbury"],["Guy's Hospital","London Bridge"],["Stamford Bridge","Fulham"],["Tottenham Hotspur Stadium","Tottenham"],["Twickenham Stadium","Twickenham"],["London Eye","South Bank"]];
+/* direction from Charing Cross (8-point) */
+const COMPASS=[["Heathrow Airport","W"],["London City Airport","E"],["Wembley","NW"],["Harrow","NW"],["Hampstead","NW"],["Camden Town","N"],["Tottenham","N"],["Enfield","N"],["Walthamstow","NE"],["Hackney","NE"],["Barking","E"],["Brixton","S"],["Croydon","S"],["Gatwick Airport","S"],["Wimbledon","SW"],["Kingston upon Thames","SW"],["Ealing","W"],["Hammersmith","W"],["Lewisham","SE"],["Bromley","SE"],["Peckham","SE"],["Stansted Airport","NE"]];
+</script>
+<script>
+(function(){
+"use strict";
+const $=(s,r=document)=>r.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+const KEYS="ABCD";
+
+/* ---------- saved progress (this browser only) ---------- */
+const KEY="pcoPrep.v1";
+function blank(){return{seru:{},wrong:[],mocks:[],routes:[],topo:[],london:{seen:0,right:0}};}
+let S=blank();
+try{const raw=localStorage.getItem(KEY);if(raw)S=Object.assign(blank(),JSON.parse(raw));}catch(e){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
+
+/* ---------- question model ---------- */
+const QS=BANK.map((b,i)=>({id:i,sec:b[0],type:b[1],q:b[2],opts:b[3],exp:b[4],page:b[5]}));
+const TYPE_LABEL={m:"Multiple choice",g:"Complete the sentence",r:"Reading and understanding"};
+function prep(q){const order=shuffle([0,1,2,3]);return{q,order,correct:order.indexOf(0)};}
+function qHTML(p,opts){
+  const q=p.q;let stem="";
+  if(q.type==="r") stem=`<div class="passage">${esc(q.q.p)}</div><p class="qtext">${esc(q.q.q)}</p>`;
+  else if(q.type==="g") stem=`<p class="qtext">${esc(q.q).replace("____",'<span class="gap">?</span>')}</p>`;
+  else stem=`<p class="qtext">${esc(q.q)}</p>`;
+  const meta=`<div class="qmeta">${opts.num?`<span class="mono">${opts.num}</span><span>·</span>`:""}<span>${esc(SECTIONS[q.sec])}</span><span>·</span><span>${TYPE_LABEL[q.type]}</span></div>`;
+  const buttons=p.order.map((oi,k)=>{
+    let cls="opt";
+    if(opts.chosen===k)cls+=" sel";
+    if(opts.reveal){ if(k===p.correct)cls+=" right"; else if(opts.chosen===k)cls+=" wrong"; }
+    return `<button class="${cls}" data-k="${k}" ${opts.reveal?"disabled":""}><span class="k">${KEYS[k]}</span><span>${esc(q.opts[oi])}</span></button>`;
+  }).join("");
+  let ex="";
+  if(opts.reveal){
+    const ok=opts.chosen===p.correct;
+    ex=`<div class="explain ${ok?"":"bad"}"><b>${ok?"Correct":"Not quite. Answer: "+esc(q.opts[0])}</b>${esc(q.exp)} <span class="note">Handbook p.${q.page}</span></div>`;
+  }
+  return `<div class="q">${meta}${stem}<div class="opts">${buttons}</div>${ex}</div>`;
+}
+function record(q,ok){
+  const r=S.seru[q.sec]||(S.seru[q.sec]={seen:0,right:0});
+  r.seen++; if(ok)r.right++;
+  S.wrong=S.wrong.filter(id=>id!==q.id); if(!ok)S.wrong.push(q.id);
+  save();
+}
+
+/* ---------- views ---------- */
+const VIEWS=["home","seru","mock","routes","topo","london"];
+let current=null;
+function show(v){
+  if(!VIEWS.includes(v))v="home";
+  current=v;
+  VIEWS.forEach(n=>{$("#v-"+n).hidden=n!==v;});
+  document.querySelectorAll(".tab").forEach(t=>t.setAttribute("aria-selected",t.dataset.view===v?"true":"false"));
+  const at=document.querySelector(`.tab[data-view="${v}"]`);if(at&&at.scrollIntoView)try{at.scrollIntoView({block:"nearest",inline:"nearest"});}catch(e){}
+  RENDER[v]();
+  try{history.replaceState(null,"","#"+v);}catch(e){}
+  window.scrollTo(0,0);
+}
+document.querySelectorAll(".tab").forEach(t=>t.addEventListener("click",()=>show(t.dataset.view)));
+
+/* ---------- HOME ---------- */
+function pctClass(p){return p>=75?"":p>=60?"mid":"low";}
+function renderHome(){
+  const secRows=Object.keys(SECTIONS).map(k=>{
+    const r=S.seru[k];const p=r&&r.seen?Math.round(100*r.right/r.seen):null;
+    return `<div class="meter"><span>${esc(SECTIONS[k])}</span><span class="val">${p===null?"–":p+"%"}</span><div class="track"><div class="fill ${p===null?"":pctClass(p)}" style="width:${p||0}%"></div></div></div>`;
+  }).join("");
+  const lastMock=S.mocks[S.mocks.length-1];
+  const bestRoute=S.routes.length?Math.round(S.routes.reduce((a,b)=>a+b,0)/S.routes.length):null;
+  $("#v-home").innerHTML=`
+  <div class="kerb" aria-hidden="true"></div>
+  <div><p class="eyebrow">London private hire licence</p><h2>Practise both TfL assessments</h2>
+  <p class="lede" style="margin-top:8px">Short practice rounds for the SERU assessment, a timed mock in the real format, route-planning drills on practice maps, and London road and landmark quizzes. Progress is saved in this browser.</p></div>
+  <div class="grid2">
+    <div class="card"><p class="eyebrow">Assessment 1</p><h3>SERU</h3>
+      <p class="note">Safety, Equality and Regulatory Understanding</p>
+      <dl class="facts"><dt>Format</dt><dd>Computer-based</dd><dt>Questions</dt><dd>37 (18 multiple choice, 17 complete the sentence, 2 reading)</dd><dt>Time</dt><dd>45 minutes</dd><dt>Pass mark</dt><dd>60%</dd><dt>Study from</dt><dd>TfL PHV Driver's Handbook</dd></dl>
+      <div class="row" style="margin-top:16px"><button class="btn primary" data-go="seru">Practise SERU</button><button class="btn" data-go="mock">Take a mock</button></div></div>
+    <div class="card"><p class="eyebrow">Assessment 2</p><h3>Topographical skills</h3>
+      <p class="note">Map reading and route planning</p>
+      <dl class="facts"><dt>Format</dt><dd>Computer-based, on-screen map</dd><dt>Questions</dt><dd>24 in 70 minutes (21 multiple choice, 3 routes)*</dd><dt>Route planning</dt><dd>66 marks: short route, short route with a closure, long route</dd><dt>Multiple choice</dt><dd>34 marks: symbols, places, streets, road numbers, compass points</dd><dt>Pass mark</dt><dd>60%</dd></dl><p class="note" style="margin-top:8px">*TfL publishes the marks and pass mark. The timing and question count come from training providers (May 2026).</p>
+      <div class="row" style="margin-top:16px"><button class="btn primary" data-go="routes">Plan routes</button><button class="btn" data-go="topo">Take a mock</button><button class="btn quiet" data-go="london">London quiz</button></div></div>
+  </div>
+  <div class="grid2">
+    <div class="card"><div class="spread"><h3>Your SERU progress</h3><span class="note">${S.wrong.length} to revisit</span></div><div class="meters">${secRows}</div></div>
+    <div class="card"><h3>Recent results</h3>
+      <dl class="facts"><dt>Last mock</dt><dd>${lastMock?`${lastMock.score}% <span class="pill ${lastMock.score>=60?"pass":"fail"}">${lastMock.score>=60?"Pass":"Below 60%"}</span>`:"Not taken yet"}</dd>
+      <dt>Mocks taken</dt><dd>${S.mocks.length}</dd>
+      <dt>Last topo mock</dt><dd>${(S.topo||[]).length?S.topo[S.topo.length-1].score+" / 100":"Not taken yet"}</dd><dt>Route average</dt><dd>${bestRoute===null?"No routes yet":bestRoute+"%"}</dd>
+      <dt>London quiz</dt><dd>${S.london.seen?Math.round(100*S.london.right/S.london.seen)+"% of "+S.london.seen:"Not started"}</dd></dl>
+      <p class="note" style="margin-top:14px">Official sources: <a href="https://content.tfl.gov.uk/phv-driver-handbook-v1.pdf" target="_blank" rel="noopener">PHV Driver's Handbook</a> · <a href="https://tfl.gov.uk/info-for/taxis-and-private-hire/licensing/topographical-assessment" target="_blank" rel="noopener">Topographical assessment</a></p>
+      <div class="row" style="margin-top:12px"><button class="btn quiet" id="resetBtn">Reset progress</button></div>
+      <div id="resetConfirm"></div></div>
+  </div>`;
+  $("#v-home").querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>show(b.dataset.go));
+  $("#resetBtn").onclick=()=>{
+    $("#resetConfirm").innerHTML=`<div class="confirm" style="margin-top:10px"><span>Clear all saved scores in this browser?</span><div class="row"><button class="btn primary" id="rcYes">Clear progress</button><button class="btn" id="rcNo">Keep it</button></div></div>`;
+    $("#rcYes").onclick=()=>{S=blank();save();renderHome();};
+    $("#rcNo").onclick=()=>{$("#resetConfirm").innerHTML="";};
+  };
+}
+
+/* ---------- SERU PRACTICE ---------- */
+const P={filter:"all",mode:"quiz",cur:null,chosen:null,session:{seen:0,right:0},queue:[]};
+function pool(){
+  if(P.filter==="weak")return QS.filter(q=>S.wrong.includes(q.id));
+  if(P.filter==="all")return QS;
+  return QS.filter(q=>q.sec===P.filter);
+}
+function nextQ(){
+  if(!P.queue.length)P.queue=shuffle(pool());
+  const q=P.queue.shift();
+  P.cur=q?prep(q):null;P.chosen=null;
+}
+function renderSeru(){
+  if(!P.cur)nextQ();
+  const chips=[["all","All sections"],["weak",`Revisit (${S.wrong.length})`]].concat(Object.entries(SECTIONS).map(([k,v])=>[k,v]))
+    .map(([k,v])=>`<button class="chip" data-f="${k}" aria-pressed="${P.filter===k}">${esc(v)}</button>`).join("");
+  let body;
+  if(P.mode==="notes"){
+    const keys=(P.filter==="all"||P.filter==="weak")?Object.keys(SECTIONS):[P.filter];
+    body=keys.map(k=>`<details class="sec" ${keys.length===1?"open":""}><summary>${esc(SECTIONS[k])}<span class="pg">${NOTES[k].length} facts</span></summary><ul>${NOTES[k].map(n=>`<li>${esc(n[0])} <span class="pg">p.${n[1]}</span></li>`).join("")}</ul></details>`).join("");
+    body=`<div style="display:grid;gap:8px">${body}</div>`;
+  }else if(!P.cur){
+    body=`<div class="card"><h3>Nothing to revisit</h3><p class="note" style="margin-top:6px">Questions you get wrong appear here. Pick another section to keep practising.</p></div>`;
+  }else{
+    const s=P.session;
+    body=`<div class="card">${qHTML(P.cur,{chosen:P.chosen,reveal:P.chosen!==null})}
+      <div class="spread" style="margin-top:16px"><span class="note mono">This session: ${s.right}/${s.seen}</span>
+      <button class="btn primary" id="nextBtn" ${P.chosen===null?"disabled":""}>Next question</button></div></div>`;
+  }
+  $("#v-seru").innerHTML=`<div><p class="eyebrow">SERU</p><div class="spread"><h2>Practice by section</h2>
+    <div class="row"><button class="chip" data-m="quiz" aria-pressed="${P.mode==="quiz"}">Questions</button><button class="chip" data-m="notes" aria-pressed="${P.mode==="notes"}">Key facts</button></div></div>
+    <p class="lede" style="margin-top:6px">${QS.length} questions written from the handbook, with the page to look up after each answer.</p></div>
+    <div class="chips">${chips}</div>${body}`;
+  const v=$("#v-seru");
+  v.querySelectorAll("[data-f]").forEach(b=>b.onclick=()=>{P.filter=b.dataset.f;P.queue=[];nextQ();renderSeru();});
+  v.querySelectorAll("[data-m]").forEach(b=>b.onclick=()=>{P.mode=b.dataset.m;renderSeru();});
+  v.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{
+    if(P.chosen!==null)return;
+    P.chosen=+b.dataset.k;const ok=P.chosen===P.cur.correct;
+    P.session.seen++;if(ok)P.session.right++;record(P.cur.q,ok);renderSeru();
+    const n=$("#nextBtn");if(n)n.focus({preventScroll:true});
+  });
+  const n=$("#nextBtn");if(n)n.onclick=()=>{nextQ();renderSeru();};
+}
+
+/* ---------- SERU MOCK ---------- */
+const M={state:"intro",items:[],answers:[],i:0,end:0,timer:null,confirm:false,result:null};
+function buildMock(){
+  const by=t=>shuffle(QS.filter(q=>q.type===t));
+  let r=by("r").slice(0,2),g=by("g").slice(0,17),m=by("m");
+  const need=37-r.length-g.length;m=m.slice(0,need);
+  return shuffle(m.concat(g)).concat(r).map(prep);
+}
+function startMock(){M.items=buildMock();M.answers=M.items.map(()=>null);M.i=0;M.state="run";M.confirm=false;M.end=Date.now()+45*60*1000;tick();clearInterval(M.timer);M.timer=setInterval(tick,1000);renderMock();}
+function fmt(ms){ms=Math.max(0,ms);const m=Math.floor(ms/60000),s=Math.floor(ms%60000/1000);return `${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`;}
+function tick(){
+  if(M.state!=="run"){clearInterval(M.timer);return;}
+  const left=M.end-Date.now();const t=$("#mockTimer");
+  if(t){t.textContent=fmt(left);t.classList.toggle("low",left<5*60000);}
+  if(left<=0)finishMock();
+}
+function finishMock(){
+  clearInterval(M.timer);M.state="done";
+  let right=0;const bySec={};
+  M.items.forEach((p,i)=>{const ok=M.answers[i]===p.correct;if(ok)right++;const b=bySec[p.q.sec]||(bySec[p.q.sec]={n:0,r:0});b.n++;if(ok)b.r++;record(p.q,ok);});
+  const score=Math.round(100*right/M.items.length);
+  M.result={right,score,bySec};S.mocks.push({score,date:new Date().toISOString().slice(0,10)});save();renderMock();
+}
+function renderMock(){
+  const v=$("#v-mock");
+  if(M.state==="intro"){
+    v.innerHTML=`<div><p class="eyebrow">SERU</p><h2>Mock test</h2><p class="lede" style="margin-top:6px">37 questions in 45 minutes, mixed like the real assessment: multiple choice, complete the sentence, and two reading questions. No feedback until you finish. You need 60% (23 correct) to pass.</p></div>
+    <div class="card"><dl class="facts" style="margin-top:0"><dt>Questions</dt><dd>37</dd><dt>Time</dt><dd>45:00</dd><dt>Pass mark</dt><dd>60%</dd><dt>Previous attempts</dt><dd>${S.mocks.length?S.mocks.slice(-5).map(m=>m.score+"%").join(", "):"None yet"}</dd></dl>
+    <div class="row" style="margin-top:16px"><button class="btn primary" id="mStart">Start the clock</button></div></div>`;
+    $("#mStart").onclick=startMock;return;
+  }
+  if(M.state==="run"){
+    const p=M.items[M.i];const answered=M.answers.filter(a=>a!==null).length;
+    const dots=M.items.map((_,i)=>`<button class="qdot ${M.answers[i]!==null?"done":""} ${i===M.i?"cur":""}" data-i="${i}" aria-label="Question ${i+1}">${i+1}</button>`).join("");
+    v.innerHTML=`<div class="spread"><div><p class="eyebrow">Mock test</p><h2>Question ${M.i+1} of 37</h2></div><span class="timer" id="mockTimer">${fmt(M.end-Date.now())}</span></div>
+    <div class="card">${qHTML(p,{chosen:M.answers[M.i],reveal:false,num:"Q"+(M.i+1)})}
+    <div class="spread" style="margin-top:16px"><div class="row"><button class="btn" id="mPrev" ${M.i===0?"disabled":""}>Previous</button><button class="btn primary" id="mNext">${M.i===36?"Review":"Next"}</button></div>
+    <button class="btn quiet" id="mFinish">Finish test (${answered}/37 answered)</button></div>
+    <div id="mConfirm">${M.confirm?`<div class="confirm" style="margin-top:12px"><span>${37-answered?`${37-answered} questions are unanswered. `:""}Submit your answers now?</span><div class="row"><button class="btn primary" id="mYes">Submit answers</button><button class="btn" id="mNo">Keep going</button></div></div>`:""}</div></div>
+    <div class="card"><p class="eyebrow" style="margin-bottom:8px">Jump to question</p><div class="qnav">${dots}</div></div>`;
+    v.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{M.answers[M.i]=+b.dataset.k;renderMock();});
+    v.querySelectorAll(".qdot").forEach(b=>b.onclick=()=>{M.i=+b.dataset.i;renderMock();});
+    $("#mPrev").onclick=()=>{M.i--;renderMock();};
+    $("#mNext").onclick=()=>{if(M.i<36){M.i++;renderMock();}else{M.confirm=true;renderMock();}};
+    $("#mFinish").onclick=()=>{M.confirm=true;renderMock();};
+    if(M.confirm){$("#mYes").onclick=finishMock;$("#mNo").onclick=()=>{M.confirm=false;renderMock();};}
+    tick();return;
+  }
+  const R=M.result;const pass=R.score>=60;
+  const secs=Object.entries(R.bySec).sort((a,b)=>a[1].r/a[1].n-b[1].r/b[1].n).map(([k,b])=>{const p=Math.round(100*b.r/b.n);return `<div class="meter"><span>${esc(SECTIONS[k])}</span><span class="val">${b.r}/${b.n}</span><div class="track"><div class="fill ${pctClass(p)}" style="width:${p}%"></div></div></div>`;}).join("");
+  const wrong=M.items.map((p,i)=>({p,i})).filter(x=>M.answers[x.i]!==x.p.correct);
+  v.innerHTML=`<div><p class="eyebrow">Mock test result</p><div class="row" style="align-items:flex-end;gap:16px"><span class="big">${R.score}%</span><span class="pill ${pass?"pass":"fail"}" style="margin-bottom:8px">${pass?"Pass":"Below the 60% pass mark"}</span></div>
+    <p class="lede" style="margin-top:8px">${R.right} of 37 correct. ${pass?"Keep practising your weakest sections below.":"You need 23 correct. Focus on the weakest sections first."}</p></div>
+    <div class="grid2"><div class="card"><h3>By section</h3><div class="meters">${secs}</div></div>
+    <div class="card"><h3>Next steps</h3><p class="note" style="margin-top:6px">Wrong answers are added to your Revisit list in SERU practice.</p><div class="row" style="margin-top:14px"><button class="btn primary" id="mAgain">New mock</button><button class="btn" id="mRevisit">Practise wrong answers</button></div></div></div>
+    <div style="display:grid;gap:12px"><h3>Review (${wrong.length} to check)</h3>${wrong.map(x=>`<div class="card">${qHTML(x.p,{chosen:M.answers[x.i],reveal:true,num:"Q"+(x.i+1)})}</div>`).join("")||'<p class="note">Nothing to review. Every answer was correct.</p>'}</div>`;
+  $("#mAgain").onclick=()=>{M.state="intro";renderMock();};
+  $("#mRevisit").onclick=()=>{P.filter="weak";P.mode="quiz";P.queue=[];nextQ();show("seru");};
+}
+
+/* ---------- TOPOGRAPHICAL: MAP MODEL ---------- */
+const GW=12,GH=9,MG=64;
+const DV={N:[0,-1],E:[1,0],S:[0,1],W:[-1,0]};const ORDER=["N","E","S","W"];
+const HEAD={N:"north",E:"east",S:"south",W:"west"};
+const nid=(x,y)=>y*GW+x,nx=i=>i%GW,ny=i=>Math.floor(i/GW);
+const inGrid=(x,y)=>x>=0&&y>=0&&x<GW&&y<GH;
+const ek=(a,b)=>a<b?a+"-"+b:b+"-"+a;
+const dirOf=(a,b)=>{const dx=nx(b)-nx(a),dy=ny(b)-ny(a);return dx>0?"E":dx<0?"W":dy>0?"S":"N";};
+const rightOf=d=>ORDER[(ORDER.indexOf(d)+1)%4],leftOf=d=>ORDER[(ORDER.indexOf(d)+3)%4],opp=d=>ORDER[(ORDER.indexOf(d)+2)%4];
+const STREET_NAMES=["Mill Road","Ash Street","Kings Road","Elm Grove","Park Walk","Vale Road","Bell Street","Hope Street","Grange Road","Oak Avenue","Church Lane","Mount Street","Fair Road","Dock Street","Rose Lane","Quay Road","Abbey Road","Bank Street","Crown Lane","Canal Road","Hill Street","Wells Road","Brook Lane","Clay Street","Ferry Road","Green Lane","Hart Street","Lime Grove","Birch Road","Cedar Way","Dean Street","Eden Road","Fern Lane","Glebe Road","Hazel Street","Ivy Lane","Jubilee Road","Kent Street","Lark Lane","Manor Road","Nile Street","Orchard Road","Pound Lane","Queens Road","Rope Walk","Salt Street","Tanner Road","Union Street","Vine Lane","Water Lane","York Road","Alder Road","Bridge Street","Cross Street","Dale Road","Elder Street","Forge Lane","Gate Street","Heath Road","Market Street","Pier Road","Wharf Street"];
+const POI_TYPES=[["hospital","Hospital"],["station","Station"],["police","Police Station"],["worship","Church"],["school","School"],["museum","Museum"],["hotel","Hotel"],["parking","Car Park"],["park","Park"]];
+const LEGEND_NAMES=[["hospital","Hospital"],["station","Railway station"],["police","Police station"],["worship","Place of worship"],["school","School"],["museum","Museum"],["hotel","Hotel"],["parking","Car park"],["park","Park"]];
+const POI_NAMES=["Kingsley","Northgate","St Anne's","Riverside","Weston","Holmfield","Ashby","Carlton","Meadow","Fenwick","Lindley","Marlow","Hawthorn","Brampton","Eastbury","Silverdale","Thornton","Wexford","Linton","Oakfield","Redcliffe","Southam","Kelvin","Moorgate"];
+const ROAD_NUMS=["A315","A402","A3036","A1199","A2206","A107","A503","A215","A4180","A3220"];
+const ENDPOINTS=["Grand Theatre","City Library","Town Hall","Market Hall","Sports Centre","Leisure Pool","Civic Centre","Art Gallery","Bus Garage","Ice Rink","Law Courts","Concert Hall","Zoo","Crown Court","Exhibition Centre","Cathedral"];
+const GRID_C="ABCDEF",GRID_R=5;
+const px=(m,n)=>m.xs[nx(n)],py=(m,n)=>m.ys[ny(n)];
+const elen=(m,a,b)=>Math.hypot(px(m,a)-px(m,b),py(m,a)-py(m,b));
+const randInt=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+
+function genMap(){
+  for(let tries=0;tries<200;tries++){
+    const xs=[MG],ys=[MG];
+    for(let i=1;i<GW;i++)xs.push(xs[i-1]+randInt(76,124));
+    for(let i=1;i<GH;i++)ys.push(ys[i-1]+randInt(76,118));
+    const VW=xs[GW-1]+MG,VH=ys[GH-1]+MG;
+    const edges=new Map();
+    for(let y=0;y<GH;y++)for(let x=0;x<GW;x++){const a=nid(x,y);if(x<GW-1)edges.set(ek(a,a+1),{a,b:a+1,h:true});if(y<GH-1)edges.set(ek(a,a+GW),{a,b:a+GW,h:false});}
+    const nb=n=>ORDER.map(d=>[nx(n)+DV[d][0],ny(n)+DV[d][1]]).filter(([x,y])=>inGrid(x,y)).map(([x,y])=>nid(x,y));
+    const deg=n=>nb(n).filter(m=>edges.has(ek(n,m))).length;
+    const connected=()=>{const seen=new Set([0]),st=[0];while(st.length){const n=st.pop();for(const m of nb(n))if(edges.has(ek(n,m))&&!seen.has(m)){seen.add(m);st.push(m);}}return seen.size===GW*GH;};
+    let removed=0;
+    for(const k of shuffle([...edges.keys()])){if(removed>=24)break;const e=edges.get(k);if(deg(e.a)<=2||deg(e.b)<=2)continue;edges.delete(k);if(!connected()){edges.set(k,e);continue;}removed++;}
+    const streets=[];
+    const addRuns=(lines,h)=>{for(const line of lines){let run=[];const flush=()=>{if(!run.length)return;
+        let parts=[run];
+        if(run.length>=7&&Math.random()<.85){const c1=randInt(2,run.length-5),c2=randInt(c1+2,run.length-2);parts=[run.slice(0,c1),run.slice(c1,c2),run.slice(c2)];}
+        else if(run.length>=4&&Math.random()<.7){const c=randInt(1,run.length-2);parts=[run.slice(0,c),run.slice(c)];}
+        parts.forEach(p=>streets.push({h,keys:p}));run=[];};
+      for(const k of line){if(edges.has(k))run.push(k);else flush();}flush();}};
+    const rows=[];for(let y=0;y<GH;y++){const l=[];for(let x=0;x<GW-1;x++)l.push(ek(nid(x,y),nid(x+1,y)));rows.push(l);}
+    const cols=[];for(let x=0;x<GW;x++){const l=[];for(let y=0;y<GH-1;y++)l.push(ek(nid(x,y),nid(x,y+1)));cols.push(l);}
+    addRuns(rows,true);addRuns(cols,false);
+    if(streets.length>STREET_NAMES.length)continue;
+    const names=shuffle(STREET_NAMES);
+    streets.forEach((s,i)=>{s.name=names[i];s.keys.forEach(k=>{edges.get(k).name=s.name;});});
+    shuffle(streets.filter(s=>s.keys.length>=2&&s.keys.length<=5)).slice(0,9).forEach(s=>{s.one=Math.random()<.5?"ab":"ba";s.keys.forEach(k=>edges.get(k).one=s.one);});
+    const nums=shuffle(ROAD_NUMS);shuffle(streets.filter(s=>s.keys.length>=3&&!s.one)).slice(0,5).forEach((s,i)=>{s.road=nums[i];});
+    shuffle(streets.filter(x=>x.keys.length>=3&&!x.road)).slice(0,6).forEach(x=>{x.cls="B";});
+    streets.forEach(x=>{if(x.road)x.cls="A";else if(!x.cls)x.cls="m";x.keys.forEach(k=>{edges.get(k).cls=x.cls;});});
+    const map={xs,ys,VW,VH,edges,streets,bans:new Set()};
+    const cand=[];
+    for(let n=0;n<GW*GH;n++)for(const din of ORDER){const bx=nx(n)-DV[din][0],by=ny(n)-DV[din][1];const r=rightOf(din);const rx=nx(n)+DV[r][0],ry=ny(n)+DV[r][1];
+      if(!inGrid(bx,by)||!inGrid(rx,ry))continue;const back=nid(bx,by),out=nid(rx,ry);
+      if(edges.has(ek(back,n))&&edges.has(ek(n,out))&&edgeOK(map,back,n)&&edgeOK(map,n,out))cand.push(n+"|"+din);}
+    const used=new Set();for(const c of shuffle(cand)){const n=+c.split("|")[0];if(used.has(n))continue;used.add(n);map.bans.add(c);if(map.bans.size>=7)break;}
+    const cells=[];for(let y=0;y<GH-1;y++)for(let x=0;x<GW-1;x++)cells.push([x,y]);
+    const pn=shuffle(POI_NAMES);
+    map.pois=shuffle(cells).slice(0,18).map((c,i)=>{const t=POI_TYPES[i%POI_TYPES.length];const cx=(xs[c[0]]+xs[c[0]+1])/2,cy=(ys[c[1]]+ys[c[1]+1])/2;return{x:c[0],y:c[1],cx,cy,type:t[0],label:pn[i],full:pn[i]+" "+t[1]};});
+    map.grid={x0:MG/2,y0:MG/2,cw:(VW-MG)/GRID_C.length,ch:(VH-MG)/GRID_R};
+    map.endpoints=shuffle(ENDPOINTS);
+    return map;
+  }
+  return null;
+}
+function gridSq(m,x,y){const g=m.grid;const c=Math.floor((x-g.x0)/g.cw),r=Math.floor((y-g.y0)/g.ch);return GRID_C[Math.max(0,Math.min(GRID_C.length-1,c))]+(Math.max(0,Math.min(GRID_R-1,r))+1);}
+function nearGridLine(m,x,y){const g=m.grid;const fx=(x-g.x0)/g.cw,fy=(y-g.y0)/g.ch;return Math.abs(fx-Math.round(fx))*g.cw<16||Math.abs(fy-Math.round(fy))*g.ch<16;}
+function edgeOK(m,a,b){const e=m.edges.get(ek(a,b));if(!e)return false;if(!e.one)return true;return e.one==="ab"?a===e.a:a===e.b;}
+/* returns null if legal, else {kind,msg} */
+function moveCheck(m,task,prev,cur,next){
+  const e=m.edges.get(ek(cur,next));
+  if(!e)return{kind:"noroad",msg:"Part of your line cuts across where there is no road."};
+  if(task&&task.closed&&task.closed.has(ek(cur,next)))return{kind:"closed",msg:`${e.name} is closed.`};
+  if(e.one&&!edgeOK(m,cur,next))return{kind:"oneway",msg:`${e.name} is one-way. You can't drive ${HEAD[dirOf(cur,next)]} on it.`};
+  if(prev!==null&&prev!==undefined){
+    const din=dirOf(prev,cur),dout=dirOf(cur,next);
+    if(dout===opp(din))return{kind:"uturn",msg:"U-turn: the route doubles back on itself."};
+    if(dout===rightOf(din)&&m.bans.has(cur+"|"+din)){const from=m.edges.get(ek(prev,cur));return{kind:"banned",msg:`No right turn from ${from?from.name:"that road"} into ${e.name}.`};}
+  }
+  return null;
+}
+/* shortest legal route by distance (Dijkstra over junction + heading) */
+function bestRoute(m,task,s,t){
+  const dist=new Map(),prev=new Map(),done=new Set();const k0=s+"|-";dist.set(k0,0);prev.set(k0,null);
+  while(true){
+    let bk=null,bd=Infinity;for(const [k,d] of dist)if(!done.has(k)&&d<bd){bd=d;bk=k;}
+    if(bk===null)return null;done.add(bk);
+    const [nS,d]=bk.split("|");const n=+nS;
+    if(n===t){const path=[n];let k=bk;while(prev.get(k)){k=prev.get(k);path.unshift(+k.split("|")[0]);}return{path,dist:bd};}
+    const p=prev.get(bk);const pn=p?+p.split("|")[0]:null;
+    for(const dd of ORDER){const x=nx(n)+DV[dd][0],y=ny(n)+DV[dd][1];if(!inGrid(x,y))continue;const q=nid(x,y);
+      if(moveCheck(m,task,pn,n,q))continue;const k=q+"|"+dd;const nd=bd+elen(m,n,q);
+      if(!done.has(k)&&nd<(dist.has(k)?dist.get(k):Infinity)){dist.set(k,nd);prev.set(k,bk);}}
+  }
+}
+function makeTask(m,kind,avoid){
+  avoid=avoid||new Set();
+  for(let k=0;k<300;k++){
+    const s=randInt(0,GW*GH-1),t=randInt(0,GW*GH-1);if(avoid.has(s)||avoid.has(t))continue;
+    const md=Math.abs(nx(s)-nx(t))+Math.abs(ny(s)-ny(t));
+    if(kind==="long"?md<13:(md<5||md>8))continue;
+    const task={kind,s,t,closed:null};let b=bestRoute(m,task,s,t);if(!b)continue;
+    if(kind==="closure"){
+      const onPath=new Set();for(let i=0;i<b.path.length-1;i++)onPath.add(m.edges.get(ek(b.path[i],b.path[i+1])).name);
+      const st=shuffle(m.streets.filter(x=>onPath.has(x.name)&&x.keys.length<=5))[0];if(!st)continue;
+      if(st.keys.some(kk=>{const e=m.edges.get(kk);return e.a===s||e.b===s||e.a===t||e.b===t;}))continue;
+      task.closed=new Set(st.keys);task.closedName=st.name;
+      b=bestRoute(m,task,s,t);if(!b)continue;
+    }
+    task.best=b.path;task.bestDist=b.dist;
+    const used=new Set([...avoid].map(String));
+    return task;
+  }
+  return null;
+}
+function namesFor(m,tasks){const e=m.endpoints;tasks.forEach((t,i)=>{t.sName=e[i*2];t.tName=e[i*2+1];});}
+function routeDist(m,r){let d=0;for(let i=0;i<r.length-1;i++)d+=elen(m,r[i],r[i+1]);return d;}
+function violations(m,task,r){const v=[];for(let i=1;i<r.length;i++){const c=moveCheck(m,task,i>1?r[i-2]:null,r[i-1],r[i]);if(c)v.push(c);}return v;}
+/* practice marking: TfL doesn't publish its exact scheme */
+function markRoute(m,task,r){
+  const parts=[];const L=r.length;
+  const reversed=L>1&&r[0]===task.t&&r[L-1]===task.s;
+  const startOK=L>0&&r[0]===task.s,endOK=L>1&&r[L-1]===task.t;
+  parts.push(["Starts at the green marker",startOK?3:0,3,reversed?"Route planned backwards":startOK?"":"Wrong start point"]);
+  parts.push(["Finishes at the red marker",endOK?3:0,3,reversed?"Route planned backwards":endOK?"":"Wrong end point"]);
+  const v=[...new Map(violations(m,task,r).map(x=>[x.msg,x])).values()];
+  const rules=Math.max(0,8-4*v.length);
+  parts.push(["Follows the roads, closures, one-way streets and turn bans",L>1?rules:0,8,v.map(x=>x.msg).join(" ")]);
+  let direct=0,note="";
+  if(L>1&&((startOK&&endOK)||reversed)){
+    const ref=reversed?bestRoute(m,task,task.t,task.s):{dist:task.bestDist};
+    const ratio=routeDist(m,r)/(ref?ref.dist:Infinity);
+    if(v.length&&ratio<0.995){direct=0;note="It's only shorter because it breaks a rule";}
+    else{direct=ratio<=1.02?8:Math.max(0,8-2*Math.ceil((ratio-1.02)/0.08));
+    note=ratio<=1.02?"":`About ${Math.round((ratio-1)*100)}% longer than the most direct route`;}
+  }else note="Route doesn't connect the two markers";
+  parts.push(["Most direct route",direct,8,note]);
+  return{pts:parts.reduce((a,p)=>a+p[1],0),parts};
+}
+/* exam-style written route: Start / L / R / F / End */
+function writtenRoute(m,r,task,full){
+  if(r.length<2)return[];
+  const legs=[];for(let i=0;i<r.length-1;i++){const e=m.edges.get(ek(r[i],r[i+1]))||{name:"(no road here)"};const d=dirOf(r[i],r[i+1]);const L=legs[legs.length-1];if(L&&L.name===e.name&&L.dir===d)continue;legs.push({name:e.name,dir:d});}
+  const out=[{k:"Start",t:`${legs[0].name} (heading ${HEAD[legs[0].dir]})`}];
+  for(let i=1;i<legs.length;i++){const a=legs[i-1].dir,b=legs[i].dir;out.push({k:b===rightOf(a)?"R":b===leftOf(a)?"L":b===opp(a)?"U-turn":"F",t:legs[i].name});}
+  if(full&&task)out.push({k:"End",t:r[r.length-1]===task.t?task.tName:r[r.length-1]===task.s?task.sName:"(not at a marker)"});
+  return out;
+}
+const routeListHTML=list=>list.length?`<ol class="dirs exam">${list.map(x=>`<li><span class="mono turn">${esc(x.k)}</span><span>${esc(x.t)}</span></li>`).join("")}</ol>`:"";
+
+/* ---------- map drawing ---------- */
+function symbol(type,cx,cy){
+  const sq=(fill,txt,fs=11)=>`<rect x="${cx-10}" y="${cy-10}" width="20" height="20" rx="3" fill="${fill}"/><text x="${cx}" y="${cy+4}" text-anchor="middle" font-size="${fs}" font-weight="700" fill="#fff" font-family="Atkinson Hyperlegible,sans-serif">${txt}</text>`;
+  switch(type){
+    case "hospital":return sq("#c0352a","H",13);
+    case "police":return sq("#2457a6","PS",9);
+    case "parking":return sq("#2f6fd6","P",13);
+    case "school":return sq("#b7791f","S",13);
+    case "museum":return sq("#7a4e2d","M",13);
+    case "hotel":return sq("#0f7c7c","Ht",10);
+    case "station":return `<circle cx="${cx}" cy="${cy}" r="10" fill="#1d2a33"/><path d="M${cx-5} ${cy-2}h10l-3-3M${cx+5} ${cy+2}h-10l3 3" stroke="#fff" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`;
+    case "worship":return `<path d="M${cx} ${cy-11}L${cx+10} ${cy+8}H${cx-10}Z" fill="#7b4bb3"/>`;
+    case "park":return `<circle cx="${cx}" cy="${cy-2}" r="7" fill="#2f8f4e"/><rect x="${cx-1.5}" y="${cy+3}" width="3" height="7" fill="#5b3a1e"/>`;
+  }
+  return "";
+}
+const banSymbol=(cx,cy)=>`<g><circle cx="${cx}" cy="${cy}" r="9.5" fill="#fff" stroke="#c0352a" stroke-width="2.4"/><path d="M${cx-2.5} ${cy+5}V${cy-1}h5" stroke="#1d2a33" stroke-width="1.8" fill="none"/><path d="M${cx+2} ${cy-3.5}l3 2.5-3 2.5" fill="#1d2a33"/><line x1="${cx-6.5}" y1="${cy-6.5}" x2="${cx+6.5}" y2="${cy+6.5}" stroke="#c0352a" stroke-width="2.4"/></g>`;
+const noEntry=(cx,cy)=>`<g><circle cx="${cx}" cy="${cy}" r="8" fill="#c0352a" stroke="#fff" stroke-width="1.5"/><rect x="${cx-5}" y="${cy-1.6}" width="10" height="3.2" fill="#fff"/></g>`;
+function legendHTML(){
+  const sv=inner=>`<svg width="26" height="26" viewBox="0 0 26 26" aria-hidden="true">${inner}</svg>`;
+  return LEGEND_NAMES.map(([t,l])=>`<div>${sv(symbol(t,13,13))}<span>${l}</span></div>`).join("")+
+  [["A","A road"],["B","B road"],["m","Minor road"]].map(([c,l])=>`<div>${sv(`<rect x="0" y="0" width="26" height="26" fill="#f3c99c"/><line x1="0" y1="13" x2="26" y2="13" stroke="#2b2420" stroke-width="13"/><line x1="0" y1="13" x2="26" y2="13" stroke="${({A:"#f6a21a",B:"#ffe34a",m:"#ffffff"})[c]}" stroke-width="10"/>`)}<span>${l}</span></div>`).join("")+
+  `<div>${sv(`<path d="M3 13H17" stroke="#d42020" stroke-width="3"/><path d="M23 13L15 7.5V18.5Z" fill="#d42020"/>`)}<span>One-way street</span></div>`+
+  `<div>${sv(noEntry(13,13))}<span>No entry</span></div>`+
+  `<div>${sv(banSymbol(13,13))}<span>No right turn</span></div>`+
+  `<div>${sv(`<line x1="2" y1="13" x2="24" y2="13" stroke="#c0352a" stroke-width="10" stroke-dasharray="4 3"/>`)}<span>Road closed</span></div>`+
+  `<div>${sv(`<rect x="1" y="7" width="24" height="12" fill="#fff" stroke="#111" stroke-width="1.2"/><text x="13" y="16.5" text-anchor="middle" font-size="8.5" font-weight="700" fill="#111" font-family="'Roboto Condensed',sans-serif-condensed,sans-serif">A1</text>`)}<span>A-road number</span></div>`;
+}
+/* map drawn in the style of a printed street atlas: tan buildings, orange A roads, yellow B roads, white minor roads */
+const AZ={paper:"#fbf6ea",bldg:"#f3c99c",bldgEdge:"#d9a877",park:"#cfe6ad",casing:"#2b2420",A:"#f6a21a",B:"#ffe34a",m:"#ffffff",ink:"#111111",grid:"#2457a6",route:"#e3001b",best:"#0a8f3c",arrow:"#d42020"};
+const RW={A:30,B:25,m:19};
+function mapSVG(m,o){
+  o=o||{};const task=o.task;
+  const P=n=>[px(m,n),py(m,n)];
+  let g=`<rect width="${m.VW}" height="${m.VH}" fill="${AZ.paper}"/>`;
+  // building blocks
+  for(let y=0;y<GH-1;y++)for(let x=0;x<GW-1;x++){const x1=m.xs[x]+14,y1=m.ys[y]+14,w=m.xs[x+1]-m.xs[x]-28,h=m.ys[y+1]-m.ys[y]-28;
+    if(m.pois.some(p=>p.type==="park"&&p.x===x&&p.y===y))g+=`<rect x="${x1-4}" y="${y1-4}" width="${w+8}" height="${h+8}" fill="${AZ.park}"/>`;
+    else g+=`<rect x="${x1}" y="${y1}" width="${w}" height="${h}" fill="${AZ.bldg}" stroke="${AZ.bldgEdge}" stroke-width="1.2"/>`;}
+  const E=[...m.edges.values()];
+  const seg=(e,stroke,w,extra)=>{const [x1,y1]=P(e.a),[x2,y2]=P(e.b);return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${stroke}" stroke-width="${w}" stroke-linecap="square" ${extra||""}/>`;};
+  const order=["m","B","A"];
+  order.forEach(c=>E.filter(e=>e.cls===c).forEach(e=>{g+=seg(e,AZ.casing,RW[c]+3);}));
+  order.forEach(c=>E.filter(e=>e.cls===c).forEach(e=>{g+=seg(e,AZ[c],RW[c]);}));
+  if(task&&task.closed)task.closed.forEach(k=>{const e=m.edges.get(k);g+=seg(e,"#c0352a",RW[e.cls]-4,`stroke-opacity=".8" stroke-dasharray="6 5"`);});
+  // atlas grid
+  const gr=m.grid;
+  for(let i=0;i<=GRID_C.length;i++){const x=gr.x0+i*gr.cw;g+=`<line x1="${x}" y1="${gr.y0}" x2="${x}" y2="${m.VH-gr.y0}" stroke="${AZ.grid}" stroke-opacity=".55" stroke-width="1.3"/>`;}
+  for(let j=0;j<=GRID_R;j++){const y=gr.y0+j*gr.ch;g+=`<line x1="${gr.x0}" y1="${y}" x2="${m.VW-gr.x0}" y2="${y}" stroke="${AZ.grid}" stroke-opacity=".55" stroke-width="1.3"/>`;}
+  const gl=(x,y,t)=>`<text x="${x}" y="${y}" text-anchor="middle" font-size="16" font-weight="700" fill="${AZ.grid}" font-family="'Roboto Condensed',sans-serif-condensed,'Arial Narrow',sans-serif">${t}</text>`;
+  for(let i=0;i<GRID_C.length;i++){const x=gr.x0+(i+.5)*gr.cw;g+=gl(x,22,GRID_C[i])+gl(x,m.VH-8,GRID_C[i]);}
+  for(let j=0;j<GRID_R;j++){const y=gr.y0+(j+.5)*gr.ch+6;g+=gl(15,y,j+1)+gl(m.VW-15,y,j+1);}
+  g+=`<text x="${m.VW-44}" y="20" text-anchor="middle" font-size="13" font-weight="700" fill="${AZ.ink}" font-family="'Roboto Condensed',sans-serif-condensed,sans-serif">N</text><path d="M${m.VW-44} 24l-5 10h10z" fill="${AZ.ink}"/>`;
+  // best route (review) under labels
+  const poly=(pts,stroke,w,dash)=>pts&&pts.length>1?`<polyline points="${pts.map(p=>p.join(",")).join(" ")}" fill="none" stroke="${stroke}" stroke-width="${w}" stroke-linejoin="round" stroke-linecap="round" ${dash?`stroke-dasharray="${dash}"`:""}/>`:"";
+  if(o.best)g+=poly(o.best.map(P),AZ.best,7,"2 11");
+  // labels, one-way arrows, no entry, road numbers
+  m.streets.forEach(s=>{
+    const mid=s.keys[Math.floor(s.keys.length/2)];const e=m.edges.get(mid);
+    const [ax,ay]=P(e.a),[bx,by]=P(e.b);const mx=(ax+bx)/2,my=(ay+by)/2;
+    const closed=task&&task.closed&&task.closed.has(mid);
+    const fs=s.cls==="A"?13.5:s.cls==="B"?12.5:11.5;const txt=s.cls==="m"?s.name:s.name.toUpperCase();const ls=s.cls==="m"?0:.6;
+    const fill=closed?"#fff":AZ.ink;
+    const t=`text-anchor="middle" font-size="${fs}" font-weight="600" letter-spacing="${ls}" fill="${fill}" font-family="'Roboto Condensed',sans-serif-condensed,'Arial Narrow',sans-serif"`;
+    g+=s.h?`<text x="${mx}" y="${my+fs*.36}" ${t}>${esc(txt)}</text>`:`<text transform="translate(${mx+fs*.36},${my}) rotate(-90)" ${t}>${esc(txt)}</text>`;
+    if(s.one){
+      const fwd=s.one==="ab";const d=s.h?(fwd?"E":"W"):(fwd?"S":"N");const [dx,dy]=DV[d];
+      s.keys.forEach(k=>{if(k===mid)return;const e2=m.edges.get(k);const [x1,y1]=P(e2.a),[x2,y2]=P(e2.b);const cx=(x1+x2)/2,cy=(y1+y2)/2;
+        g+=`<path d="M${cx-dx*14},${cy-dy*14} L${cx+dx*4},${cy+dy*4}" stroke="${AZ.arrow}" stroke-width="3"/><path d="M${cx+dx*12},${cy+dy*12} L${cx+dx*2-dy*6},${cy+dy*2-dx*6} L${cx+dx*2+dy*6},${cy+dy*2+dx*6} Z" fill="${AZ.arrow}"/>`;});
+      const ends=s.keys.flatMap(k=>{const e2=m.edges.get(k);return[e2.a,e2.b];});
+      const exitNode=fwd?Math.max(...ends):Math.min(...ends);const [ex,ey]=P(exitNode);
+      g+=noEntry(ex-dx*24,ey-dy*24);
+    }
+    if(s.road){const k2=s.keys[s.keys.length>1?Math.floor(s.keys.length/2)-1:0];const e3=m.edges.get(k2);const [x1,y1]=P(e3.a),[x2,y2]=P(e3.b);const rx=(x1+x2)/2,ry=(y1+y2)/2;const w=s.road.length*8+8;
+      g+=`<rect x="${rx-w/2}" y="${ry-9}" width="${w}" height="18" fill="#fff" stroke="${AZ.ink}" stroke-width="1.4"/><text x="${rx}" y="${ry+5}" text-anchor="middle" font-size="12" font-weight="700" fill="${AZ.ink}" font-family="'Roboto Condensed',sans-serif-condensed,'Arial Narrow',sans-serif">${s.road}</text>`;}
+  });
+  m.bans.forEach(b=>{const [nS,din]=b.split("|");const n=+nS;const [dx,dy]=DV[din];const [lx,ly]=DV[leftOf(din)];let bx=px(m,n)-dx*32+lx*27,by=py(m,n)-dy*32+ly*27;
+    if(bx<MG-4||bx>m.VW-MG+4||by<MG-4||by>m.VH-MG+4){bx=px(m,n)-dx*32-lx*27;by=py(m,n)-dy*32-ly*27;}g+=banSymbol(bx,by);});
+  m.pois.forEach(p=>{const cy=p.cy-7;g+=symbol(p.type,p.cx,cy)+`<text x="${p.cx}" y="${cy+26}" text-anchor="middle" font-size="11.5" font-weight="600" fill="${AZ.ink}" font-family="'Roboto Condensed',sans-serif-condensed,'Arial Narrow',sans-serif">${esc(p.label)}</text>`;});
+  // the candidate's drawn line
+  if(o.pts&&o.pts.length){g+=poly(o.pts,AZ.route,4.5);o.pts.forEach(p=>{g+=`<circle cx="${p[0]}" cy="${p[1]}" r="4" fill="${AZ.route}" stroke="#fff" stroke-width="1.2"/>`;});}
+  if(task){
+    const pin=(n,col)=>{const [x,y]=P(n);return `<g pointer-events="none"><path d="M${x} ${y}c-7-11-14-16-14-25a14 14 0 0 1 28 0c0 9-7 14-14 25z" fill="${col}" stroke="#1a1a1a" stroke-width="1.5"/><circle cx="${x}" cy="${y-25}" r="5.5" fill="#1a1a1a"/></g>`;};
+    g+=pin(task.s,"#16a34a")+pin(task.t,"#e3001b");
+  }
+  return g;
+}
+function viewerHTML(id,m,o,cls){
+  return `<div class="mapframe ${cls||""}" id="${id}"><svg viewBox="${(o.vb||[0,0,m.VW,m.VH]).join(" ")}" role="img" aria-label="Street map">${mapSVG(m,o)}</svg>
+  <div class="zoom"><button type="button" data-z="in" aria-label="Zoom in">+</button><button type="button" data-z="out" aria-label="Zoom out">−</button><button type="button" data-z="fit" aria-label="Show whole map">⤢</button></div></div>`;
+}
+/* pan with right-button drag (or any drag), scroll to zoom; a click that doesn't move calls onClick with map coordinates */
+function wireViewer(id,m,state,onClick,focus){
+  const box=document.getElementById(id);if(!box)return;const svg=box.querySelector("svg");
+  if(!state.vb){state.vb=[0,0,m.VW,m.VH];
+    if(box.clientWidth&&box.clientWidth<600){const w=Math.min(m.VW,480),h=w*box.clientHeight/box.clientWidth;const fx=focus!=null?px(m,focus):m.VW/2,fy=focus!=null?py(m,focus):m.VH/2;state.vb=[fx-w/2,fy-h/2,w,h];}}
+  const apply=()=>svg.setAttribute("viewBox",state.vb.join(" "));apply();
+  const zoom=(f,cx,cy)=>{const [x,y,w,h]=state.vb;let nw=Math.max(m.VW/8,Math.min(m.VW*1.05,w*f));const r=nw/w;const nh=h*r;
+    if(cx===undefined){cx=x+w/2;cy=y+h/2;}state.vb=[cx-(cx-x)*r,cy-(cy-y)*r,nw,nh];apply();};
+  state.zoom=zoom;state.home=()=>{state.vb=[0,0,m.VW,m.VH];apply();};
+  box.querySelectorAll("[data-z]").forEach(b=>b.addEventListener("click",e=>{e.stopPropagation();const z=b.dataset.z;if(z==="in")zoom(.7);else if(z==="out")zoom(1/.7);else state.home();}));
+  const toMap=(cx,cy)=>{const pt=svg.createSVGPoint();pt.x=cx;pt.y=cy;const c=svg.getScreenCTM();return c?pt.matrixTransform(c.inverse()):{x:0,y:0};};
+  let drag=null;
+  box.addEventListener("contextmenu",e=>e.preventDefault());
+  svg.addEventListener("pointerdown",e=>{drag={x:e.clientX,y:e.clientY,vb:state.vb.slice(),moved:e.button===2,btn:e.button,id:e.pointerId};if(e.button===2){try{svg.setPointerCapture(e.pointerId);}catch(_){}}});
+  svg.addEventListener("pointermove",e=>{if(!drag)return;const dx=e.clientX-drag.x,dy=e.clientY-drag.y;
+    if(!drag.moved&&Math.hypot(dx,dy)>6){drag.moved=true;try{svg.setPointerCapture(drag.id);}catch(_){}}
+    if(drag.moved){const c=svg.getScreenCTM();const sc=c?1/c.a:1;state.vb=[drag.vb[0]-dx*sc,drag.vb[1]-dy*sc,drag.vb[2],drag.vb[3]];apply();}});
+  svg.addEventListener("pointerup",e=>{if(!drag)return;const d=drag;drag=null;if(d.moved||d.btn!==0||!onClick)return;const p=toMap(e.clientX,e.clientY);onClick(p.x,p.y);});
+  svg.addEventListener("pointercancel",()=>{drag=null;});
+  svg.addEventListener("wheel",e=>{e.preventDefault();const p=toMap(e.clientX,e.clientY);zoom(e.deltaY>0?1.15:1/1.15,p.x,p.y);},{passive:false});
+}
+/* turn the clicked points into a road route: each click snaps to the nearest junction;
+   a straight stretch along one road fills in; anything else counts as leaving the road */
+function deriveRoute(m,pts){
+  const nodes=[];
+  for(const [x,y] of pts){let best=null,bd=42;for(let n=0;n<GW*GH;n++){const d=Math.hypot(px(m,n)-x,py(m,n)-y);if(d<bd){bd=d;best=n;}}
+    if(best===null)continue;if(nodes.length&&nodes[nodes.length-1]===best)continue;nodes.push(best);}
+  const route=[];
+  for(const b of nodes){
+    if(!route.length){route.push(b);continue;}
+    const a=route[route.length-1];
+    if(nx(a)===nx(b)||ny(a)===ny(b)){const d=dirOf(a,b);const steps=[];let p=a,ok=true;
+      while(p!==b){const q=nid(nx(p)+DV[d][0],ny(p)+DV[d][1]);if(!m.edges.has(ek(p,q))){ok=false;break;}steps.push(q);p=q;}
+      if(ok){route.push(...steps);continue;}}
+    route.push(b);
+  }
+  return route;
+}
+/* the exam-style drawing screen */
+function examUI(id,m,task,st,o){
+  const drawLbl=st.drawing?"STOP DRAWING":"START DRAWING";
+  return `<div class="exam" id="${id}-wrap">
+    <aside class="exam-instr">
+      <p class="exam-q">Draw the direct route from <b class="start">${esc(task.sName)}</b> (green marker) to <b class="end">${esc(task.tName)}</b> (red marker)</p>
+      ${task.closedName?`<p class="exam-closed">NOTE: ${esc(task.closedName)} is CLOSED</p>`:""}
+      <p>Hold down the right mouse button to drag the map. On a touchscreen, drag with one finger.</p>
+      <p>Use the scroll wheel, or + and −, to zoom.</p>
+      <ol><li>Click the ‘Start drawing’ button</li><li>At the start point, click once</li><li>Move to the next position and click once. Click at every junction where the route turns</li><li>Repeat until the route is complete, then click ‘Stop drawing’</li></ol>
+    </aside>
+    <div class="exam-main">
+      <div class="exam-bar top">
+        <button type="button" class="eb ${st.drawing?"stop":"go"}" data-act="draw" ${st.locked?"disabled":""}>${drawLbl}</button>
+        <button type="button" class="eb undo" data-act="undo" ${st.pts.length&&!st.locked?"":"disabled"}>UNDO</button>
+        <button type="button" class="eb clear" data-act="clear" ${st.pts.length&&!st.locked?"":"disabled"}>CLEAR</button>
+        <button type="button" class="eb dim" data-act="bright">BRIGHTNESS</button>
+        <button type="button" class="eb dim2" data-act="home">HOME</button>
+      </div>
+      <div class="mapframe exam-map ${st.drawing?"drawing":""}" id="${id}" style="filter:brightness(${[1,.88,.76][st.bright||0]})"><svg viewBox="${(st.vb||[0,0,m.VW,m.VH]).join(" ")}" role="img" aria-label="Street map for the route question">${mapSVG(m,{task,pts:st.pts,best:st.best})}</svg>
+        <div class="zoom"><button type="button" data-z="in" aria-label="Zoom in">+</button><button type="button" data-z="out" aria-label="Zoom out">−</button></div>
+        ${st.drawing?`<div class="drawtag">Drawing: click to add points</div>`:""}</div>
+      <div class="exam-bar bottom">${o.bottom||""}</div>
+    </div></div>`;
+}
+function wireExam(id,m,task,st,onChange){
+  const wrap=document.getElementById(id+"-wrap");if(!wrap)return;
+  wrap.querySelectorAll("[data-act]").forEach(b=>b.addEventListener("click",()=>{const a=b.dataset.act;
+    if(a==="draw")st.drawing=!st.drawing;else if(a==="undo")st.pts.pop();else if(a==="clear"){st.pts=[];}else if(a==="bright")st.bright=((st.bright||0)+1)%3;else if(a==="home"){st.vb=null;}
+    onChange();}));
+  wireViewer(id,m,st,(x,y)=>{if(!st.drawing||st.locked)return;st.pts.push([Math.round(x),Math.round(y)]);onChange();},task.s);
+}
+
+/* ---------- map multiple-choice questions ---------- */
+const DN8={E:"East",NE:"North-east",N:"North",NW:"North-west",W:"West",SW:"South-west",S:"South",SE:"South-east"};
+const SEC8=["E","NE","N","NW","W","SW","S","SE"];
+function dir8(dx,dy){const ang=Math.atan2(dy,dx)*180/Math.PI;const f=((ang/45)%8+8)%8;if(Math.abs(f-Math.round(f))>.3)return null;return SEC8[Math.round(f)%8];}
+function farDirs(d,n){const i=SEC8.indexOf(d);return shuffle(SEC8.filter((s,j)=>Math.min((j-i+8)%8,(i-j+8)%8)>=2)).slice(0,n);}
+function mcq(q,correct,wrong,extra){const a=Array.isArray(correct)?correct:[correct];return Object.assign({q,opts:shuffle([...new Set(a.concat(wrong))]),a,multi:a.length>1},extra||{});}
+function randomSquares(m,not,n){const all=[];for(const c of GRID_C)for(let r=1;r<=GRID_R;r++)all.push(c+r);return shuffle(all.filter(x=>x!==not)).slice(0,n);}
+const MAPQ={
+  symbol(m){const p=pick(m.pois.filter(p=>p.type!=="park"));const tn=Object.fromEntries(LEGEND_NAMES);
+    return mcq("What does this map symbol show?",tn[p.type],shuffle(LEGEND_NAMES.filter(t=>t[0]!==p.type&&t[0]!=="park").map(t=>t[1])).slice(0,3),{sym:p.type,map:false,cat:"Map symbols"});},
+  place(m){const p=pick(m.pois.filter(p=>!nearGridLine(m,p.cx,p.cy))||m.pois);const sq=gridSq(m,p.cx,p.cy);return mcq(`In which grid square is ${p.full}?`,sq,randomSquares(m,sq,3),{map:true,cat:"Places of interest"});},
+  junction(m){for(let k=0;k<200;k++){const n=randInt(0,GW*GH-1);const hs=ORDER.filter(d=>d==="E"||d==="W").map(d=>[nx(n)+DV[d][0],ny(n)+DV[d][1]]).filter(([x,y])=>inGrid(x,y)).map(([x,y])=>m.edges.get(ek(n,nid(x,y)))).filter(Boolean);
+      const vs=["N","S"].map(d=>[nx(n)+DV[d][0],ny(n)+DV[d][1]]).filter(([x,y])=>inGrid(x,y)).map(([x,y])=>m.edges.get(ek(n,nid(x,y)))).filter(Boolean);
+      if(!hs.length||!vs.length||nearGridLine(m,px(m,n),py(m,n)))continue;const sq=gridSq(m,px(m,n),py(m,n));
+      return mcq(`In which grid square does ${hs[0].name} meet ${vs[0].name}?`,sq,randomSquares(m,sq,3),{map:true,cat:"Finding streets"});}
+    return null;},
+  crossing(m){for(const s of shuffle(m.streets.filter(s=>s.keys.length>=3))){const nodes=new Set(s.keys.flatMap(k=>{const e=m.edges.get(k);return[e.a,e.b];}));
+      const cross=[...new Set(m.streets.filter(o=>o.h!==s.h&&o.keys.some(k=>{const e=m.edges.get(k);return nodes.has(e.a)||nodes.has(e.b);})).map(o=>o.name))];
+      const not=[...new Set(m.streets.filter(o=>o.h!==s.h&&!cross.includes(o.name)).map(o=>o.name))];
+      if(cross.length<2||not.length<2)continue;return mcq(`Which TWO of these streets meet ${s.name}? Select two answers.`,shuffle(cross).slice(0,2),shuffle(not).slice(0,2),{map:true,cat:"Finding streets"});}
+    return null;},
+  roadnum(m){const s=pick(m.streets.filter(s=>s.road));if(!s)return null;
+    return Math.random()<.5?mcq(`What is the road number of ${s.name}?`,s.road,shuffle(ROAD_NUMS.filter(r=>r!==s.road)).slice(0,3),{map:true,cat:"Road numbers"})
+      :mcq(`Which road is the ${s.road}?`,s.name,shuffle(m.streets.filter(o=>o.name!==s.name)).slice(0,3).map(o=>o.name),{map:true,cat:"Road numbers"});},
+  compass(m){for(const [a,b] of shuffle(m.pois.flatMap(a=>m.pois.filter(b=>b!==a).map(b=>[a,b])))){const d=dir8(a.cx-b.cx,b.cy-a.cy);if(!d||Math.hypot(a.cx-b.cx,a.cy-b.cy)<150)continue;
+      return mcq(`Which direction is ${a.full} from ${b.full}?`,DN8[d],farDirs(d,3).map(x=>DN8[x]),{map:true,cat:"Compass points"});}
+    return null;}
+};
+const LONQ={
+  roadnum(){const [n,r]=pick(ROADS);return Math.random()<.5?mcq(`What is the road number of ${r}?`,n,shuffle(ROADS.filter(x=>x[0]!==n)).slice(0,3).map(x=>x[0]),{cat:"Road numbers"}):mcq(`Which of these roads is part of the ${n}?`,r,shuffle(ROADS.filter(x=>x[0]!==n)).slice(0,3).map(x=>x[1]),{cat:"Road numbers"});},
+  place(){const [p,a]=pick(PLACES);const areas=[...new Set(PLACES.map(x=>x[1]))].filter(x=>x!==a&&!x.includes(a)&&!a.includes(x));return mcq(`In which area is ${p}?`,a,shuffle(areas).slice(0,3),{cat:"Places of interest"});},
+  compass(){const [p,d]=pick(COMPASS);return mcq(`From Charing Cross, in which direction is ${p}?`,DN8[d],farDirs(d,3).map(x=>DN8[x]),{cat:"Compass points"});},
+  compass2(){const d=pick(["W","E","N","S"]);const i=SEC8.indexOf(d);const near=SEC8.filter((s,j)=>Math.min((j-i+8)%8,(i-j+8)%8)<=1);const yes=shuffle(COMPASS.filter(c=>near.includes(c[1])));const no=shuffle(COMPASS.filter(c=>{const j=SEC8.indexOf(c[1]);return Math.min((j-i+8)%8,(i-j+8)%8)>=3;}));
+    return mcq(`Which TWO of these are to the ${DN8[d].toLowerCase()} of Charing Cross? Select two answers.`,yes.slice(0,2).map(c=>c[0]),no.slice(0,2).map(c=>c[0]),{cat:"Compass points"});}
+};
+const ESSENTIALS=[
+ ["The most direct route is the shortest legal route between the two markers.",true],
+ ["You may use a closed road if it makes the route shorter.",false],
+ ["You can drive the wrong way along a one-way street for a short distance if it is quiet.",false],
+ ["A no right turn sign means you must reach the road on your right another way.",true],
+ ["Planning the route from the end point back to the start is acceptable.",false],
+ ["Your route should start at the green marker and finish at the red marker.",true],
+ ["One-way streets can be used in the direction of the arrow.",true],
+ ["A PHV may drive in a bus lane to shorten the route.",false],
+ ["When a road is closed, you plan the next most direct route around it.",true],
+ ["A legal route that is much longer than needed can still lose marks.",true],
+ ["A no entry sign means you must not drive into the road from that end.",true],
+ ["Turning into a one-way street against the arrow is allowed at night.",false]
+];
+const essentialQ=([s,v])=>({q:`True or false? ${s}`,opts:["True","False"],a:[v?"True":"False"],multi:false,cat:"Route planning essentials",tf:true});
+function mcHTML(it,sel,reveal,i){
+  sel=sel||[];
+  const sym=it.sym?`<svg width="52" height="52" viewBox="0 0 26 26" aria-label="Map symbol" style="background:var(--block);border-radius:8px">${symbol(it.sym,13,13)}</svg>`:"";
+  const opts=it.opts.map(o=>{let c="opt";if(sel.includes(o))c+=" sel";if(reveal){if(it.a.includes(o))c+=" right";else if(sel.includes(o))c+=" wrong";}
+    return `<button class="${c}" data-o="${esc(o)}" data-qi="${i}" ${reveal?"disabled":""}>${it.multi?`<span class="k">${sel.includes(o)?"☑":"☐"}</span>`:""}<span>${esc(o)}</span></button>`;}).join("");
+  const ok=reveal&&sel.length===it.a.length&&it.a.every(a=>sel.includes(a));
+  return `<div class="q" style="gap:10px"><div class="qmeta"><span>${esc(it.cat)}</span>${it.multi?`<span>·</span><span>Two answers</span>`:""}</div>${sym}<p class="qtext" style="font-size:1.05rem">${esc(it.q)}</p>
+    <div class="opts" style="grid-template-columns:repeat(auto-fit,minmax(min(100%,170px),1fr))">${opts}</div>
+    ${reveal?`<div class="explain ${ok?"":"bad"}"><b>${ok?"Correct":"Answer: "+esc(it.a.join(" and "))}</b></div>`:""}</div>`;
+}
+function toggleSel(it,sel,o){sel=(sel||[]).slice();if(it.multi){if(sel.includes(o))sel=sel.filter(x=>x!==o);else{sel.push(o);if(sel.length>it.a.length)sel.shift();}}else sel=[o];return sel;}
+const isRight=(it,sel)=>!!sel&&sel.length===it.a.length&&it.a.every(a=>sel.includes(a));
+
+/* ---------- ROUTE PRACTICE VIEW ---------- */
+const RT={mode:"short",map:null,task:null,st:null,marked:null,qs:[],ans:{},msg:null};
+function newRoute(keepMap){
+  if(!keepMap||!RT.map)RT.map=genMap();
+  RT.task=makeTask(RT.map,RT.mode);if(!RT.task){RT.map=genMap();RT.task=makeTask(RT.map,RT.mode);}
+  RT.task.sName=pick(ENDPOINTS);RT.task.tName=pick(ENDPOINTS.filter(x=>x!==RT.task.sName));
+  RT.st={pts:[],drawing:false,vb:null,bright:0};RT.marked=null;RT.msg=null;
+  RT.qs=["symbol","place","junction","crossing","roadnum","compass","compass"].map(k=>MAPQ[k](RT.map)).filter(Boolean);RT.ans={};
+}
+function taskText(t){return `Draw the direct route from <span class="start">${esc(t.sName)}</span> (green marker) to <span class="end">${esc(t.tName)}</span> (red marker).`;}
+function markHTML(mk){return `<table class="marks"><tbody>${mk.parts.map(p=>`<tr><td>${esc(p[0])}${p[3]?`<div class="note">${esc(p[3])}</div>`:""}</td><td class="mono">${p[1]}/${p[2]}</td></tr>`).join("")}<tr><td><b>Total</b></td><td class="mono"><b>${mk.pts}/22</b></td></tr></tbody></table>`;}
+function renderRoutes(){
+  if(!RT.map)newRoute();
+  const m=RT.map,t=RT.task,st=RT.st;
+  const modes=[["short","Short route"],["closure","Short route with closure"],["long","Long route"]].map(([k,l])=>`<button class="chip" data-mode="${k}" aria-pressed="${RT.mode===k}">${l}</button>`).join("");
+  const answered=Object.keys(RT.ans).length,rightN=RT.qs.filter((q,i)=>isRight(q,RT.ans[i])).length;
+  const bottom=RT.marked?`<span class="eb-note">Marked: ${RT.marked.pts}/22</span><button type="button" class="ebw" id="rNew">Next route</button>`
+    :`<button type="button" class="ebw" id="rNew">New route</button><button type="button" class="ebw strong" id="rCheck" ${st.pts.length<2?"disabled":""}>Submit route</button>`;
+  const derived=deriveRoute(m,st.pts);
+  $("#v-routes").innerHTML=`<div><p class="eyebrow">Topographical</p><h2>Route planning</h2>
+    <p class="lede" style="margin-top:6px">Laid out like the assessment screen: instructions on the left, a toolbar to start and stop drawing, and a street map in atlas colours. Draw your route point to point, then submit it to be marked.</p></div>
+    <div class="chips">${modes}</div>
+    ${RT.msg?`<div class="toast ${RT.msg[0]}" role="status">${esc(RT.msg[1])}</div>`:""}
+    ${examUI("rtMap",m,t,st,{bottom})}
+    ${RT.marked?`<div class="grid2" style="align-items:start">
+      <div class="card"><p class="eyebrow">Your mark</p><div class="score">${RT.marked.pts}/22</div>${markHTML(RT.marked)}
+        <p class="note" style="margin-top:10px">Practice marking. TfL marks by hand and doesn't publish its exact scheme, but it does take marks off for the wrong start or end, planning backwards, banned turns or closed roads, and routes that aren't the most direct.</p></div>
+      <div class="card"><p class="eyebrow" style="margin-bottom:6px">Your route, as roads</p>${routeListHTML(writtenRoute(m,derived,t,true))||'<p class="note">Your line didn\'t follow the roads.</p>'}
+        <p class="eyebrow" style="margin:16px 0 6px">A most direct route (dotted green on the map)</p>${routeListHTML(writtenRoute(m,t.best,t,true))}</div></div>`:""}
+    <details class="sec"><summary>Map key</summary><div class="legend" style="padding:0 16px 16px">${legendHTML()}</div></details>
+    <div class="card" style="display:grid;gap:18px"><div class="spread"><h3>Map questions on this map</h3><span class="note mono">${rightN}/${answered} correct</span></div>
+      ${RT.qs.map((q,i)=>mcHTML(q,RT.ans[i]&&RT.ans[i].sel,RT.ans[i]&&RT.ans[i].done,i)+(q.multi&&!(RT.ans[i]&&RT.ans[i].done)?`<div><button class="btn" data-confirm="${i}" ${(RT.ans[i]&&RT.ans[i].sel||[]).length===2?"":"disabled"}>Check answer</button></div>`:"")).join("")}</div>`;
+  const v=$("#v-routes");
+  v.querySelectorAll("[data-mode]").forEach(b=>b.onclick=()=>{RT.mode=b.dataset.mode;newRoute(true);renderRoutes();});
+  wireExam("rtMap",m,t,st,()=>{RT.msg=null;renderRoutes();});
+  $("#rNew").onclick=()=>{newRoute(true);renderRoutes();};
+  const c=$("#rCheck");if(c)c.onclick=()=>{st.drawing=false;st.locked=true;st.best=t.best;RT.marked=markRoute(m,t,deriveRoute(m,st.pts));S.routes.push(Math.round(100*RT.marked.pts/22));if(S.routes.length>50)S.routes.shift();save();renderRoutes();};
+  v.querySelectorAll(".opt[data-qi]").forEach(b=>b.onclick=()=>{const i=+b.dataset.qi,q=RT.qs[i];const a=RT.ans[i]||{sel:[],done:false};if(a.done)return;a.sel=toggleSel(q,a.sel,b.dataset.o);if(!q.multi)a.done=true;RT.ans[i]=a;renderRoutes();});
+  v.querySelectorAll("[data-confirm]").forEach(b=>b.onclick=()=>{const i=+b.dataset.confirm;RT.ans[i].done=true;renderRoutes();});
+}
+
+/* ---------- TOPOGRAPHICAL MOCK ---------- */
+const T={state:"intro",map:null,items:[],ans:[],flags:[],views:[],i:0,end:0,timer:null,confirm:false,review:false,result:null};
+function buildTopo(){
+  let m,tasks;
+  for(let k=0;k<20;k++){m=genMap();const avoid=new Set();tasks=[];for(const kind of ["short","closure","long"]){const tk=makeTask(m,kind,avoid);if(!tk)break;avoid.add(tk.s);avoid.add(tk.t);tasks.push(tk);}if(tasks.length===3)break;}
+  namesFor(m,tasks);
+  const gen=(f,...a)=>{for(let k=0;k<10;k++){const q=f(...a);if(q)return q;}return null;};
+  const items=[];
+  shuffle(ESSENTIALS).slice(0,4).forEach(e=>items.push(essentialQ(e)));
+  tasks.forEach((tk,i)=>items.push({route:true,task:tk,label:["Short route","Short route with a road closure","Long route"][i]}));
+  const seenSym=new Set();for(let k=0;k<2;k++){let q;for(let j=0;j<20;j++){q=MAPQ.symbol(m);if(!seenSym.has(q.sym))break;}seenSym.add(q.sym);items.push(q);}
+  items.push(gen(MAPQ.place,m),gen(MAPQ.place,m),LONQ.place());
+  items.push(gen(MAPQ.junction,m),gen(MAPQ.junction,m),gen(MAPQ.crossing,m)||gen(MAPQ.junction,m));
+  items.push(gen(MAPQ.roadnum,m),gen(MAPQ.roadnum,m),LONQ.roadnum());
+  items.push(gen(MAPQ.compass,m),gen(MAPQ.compass,m),gen(MAPQ.compass,m),LONQ.compass(),LONQ.compass(),LONQ.compass2());
+  return{m,items:items.filter(Boolean)};
+}
+function topoStart(){const b=buildTopo();T.map=b.m;T.items=b.items;T.ans=T.items.map(it=>it.route?{pts:[],drawing:false,vb:null,bright:0}:null);T.flags=T.items.map(()=>false);T.views=T.items.map(()=>({}));T.i=0;T.state="run";T.confirm=false;T.review=false;T.end=Date.now()+70*60*1000;clearInterval(T.timer);T.timer=setInterval(topoTick,1000);renderTopo();}
+function topoTick(){if(T.state!=="run"){clearInterval(T.timer);return;}const left=T.end-Date.now();const el=$("#topoTimer");if(el){el.textContent=fmt(left);el.classList.toggle("low",left<10*60000);}if(left<=0)topoFinish();}
+const answeredItem=(it,a)=>it.route?a&&a.pts.length>1:a&&a.length===it.a.length;
+function topoFinish(){
+  clearInterval(T.timer);T.state="done";
+  let routePts=0,mcRight=0,mcN=0;const marks=T.items.map((it,i)=>{if(it.route){const mk=markRoute(T.map,it.task,deriveRoute(T.map,T.ans[i].pts));routePts+=mk.pts;return mk;}mcN++;if(isRight(it,T.ans[i]))mcRight++;return null;});
+  const mcPts=Math.round(34*mcRight/mcN);const total=routePts+mcPts;
+  T.result={routePts,mcPts,mcRight,mcN,total,marks};S.topo=(S.topo||[]).concat([{score:total,date:new Date().toISOString().slice(0,10)}]);save();renderTopo();
+}
+function renderTopo(){
+  const v=$("#v-topo");
+  if(T.state==="intro"){
+    v.innerHTML=`<div><p class="eyebrow">Topographical</p><h2>Mock assessment</h2><p class="lede" style="margin-top:6px">Set out like the current computer-based test: one on-screen map, three route questions (short, short with a road closure, long) and 21 multiple-choice questions, in 70 minutes. Nothing is marked until you submit.</p></div>
+    <div class="card"><dl class="facts" style="margin-top:0"><dt>Questions</dt><dd>24 (21 multiple choice, 3 routes)</dd><dt>Time</dt><dd>70:00</dd><dt>Marks</dt><dd>Routes 66, multiple choice 34</dd><dt>Pass mark</dt><dd>60 out of 100</dd><dt>Previous attempts</dt><dd>${(S.topo||[]).length?S.topo.slice(-5).map(x=>x.score).join(", "):"None yet"}</dd></dl>
+    <p class="note" style="margin-top:12px">Some questions need two answers; the question will say so. You can flag questions and come back to them before submitting.</p>
+    <div class="row" style="margin-top:16px"><button class="btn primary" id="tStart">Start the clock</button></div></div>`;
+    $("#tStart").onclick=topoStart;return;
+  }
+  if(T.state==="run"){
+    const N=T.items.length;const answered=T.items.filter((it,i)=>answeredItem(it,T.ans[i])).length;
+    if(T.review){
+      v.innerHTML=`<div class="spread"><div><p class="eyebrow">Topographical mock</p><h2>Review your answers</h2></div><span class="timer" id="topoTimer">${fmt(T.end-Date.now())}</span></div>
+      <div class="card"><p class="note" style="margin-bottom:12px">${answered} of ${N} answered · ${T.flags.filter(Boolean).length} flagged. Tap a question to go back to it.</p>
+      <div class="qnav">${T.items.map((it,i)=>`<button class="qdot ${answeredItem(it,T.ans[i])?"done":""}" data-i="${i}" style="${T.flags[i]?"border:2px solid var(--accent)":""}">${i+1}</button>`).join("")}</div>
+      <div id="tConfirm" style="margin-top:14px">${T.confirm?`<div class="confirm"><span>${N-answered?`${N-answered} questions are unanswered. `:""}Submit the assessment now?</span><div class="row"><button class="btn primary" id="tYes">Submit assessment</button><button class="btn" id="tNo">Keep going</button></div></div>`:`<button class="btn primary" id="tSubmit">Submit assessment</button>`}</div></div>`;
+      v.querySelectorAll(".qdot").forEach(b=>b.onclick=()=>{T.i=+b.dataset.i;T.review=false;T.confirm=false;renderTopo();});
+      const s=$("#tSubmit");if(s)s.onclick=()=>{T.confirm=true;renderTopo();};
+      if(T.confirm){$("#tYes").onclick=topoFinish;$("#tNo").onclick=()=>{T.confirm=false;renderTopo();};}
+      topoTick();return;
+    }
+    const it=T.items[T.i];
+    const head=`<div class="spread"><div><p class="eyebrow">Topographical mock</p><h2>Question ${T.i+1} of ${N}</h2></div><span class="timer" id="topoTimer">${fmt(T.end-Date.now())}</span></div>`;
+    if(it.route){
+      const st=T.ans[T.i];
+      const bottom=`<button type="button" class="ebw" id="tReview">Review</button><button type="button" class="ebw" id="tFlag" aria-pressed="${T.flags[T.i]}">${T.flags[T.i]?"⚑ Flagged":"⚐ Flag"}</button><span style="flex:1"></span><button type="button" class="ebw" id="tPrev" ${T.i===0?"disabled":""}>Previous</button><button type="button" class="ebw" id="tNext">Next</button>`;
+      v.innerHTML=head+`<p class="eyebrow">${esc(it.label)}</p>`+examUI("tMap",T.map,it.task,st,{bottom})+`<details class="sec"><summary>Map key</summary><div class="legend" style="padding:0 16px 16px">${legendHTML()}</div></details>`;
+      wireExam("tMap",T.map,it.task,st,renderTopo);
+    }else{
+      v.innerHTML=head+`<div class="card" style="display:grid;gap:14px">${it.map?viewerHTML("tMap",T.map,{vb:T.views[T.i].vb},"small"):""}${mcHTML(it,T.ans[T.i],false,T.i)}
+      <div class="spread"><div class="row"><button class="btn" id="tPrev" ${T.i===0?"disabled":""}>Previous</button><button class="btn primary" id="tNext">${T.i===N-1?"Review assessment":"Next"}</button></div>
+      <div class="row"><button class="btn quiet" id="tFlag" aria-pressed="${T.flags[T.i]}">${T.flags[T.i]?"⚑ Flagged":"⚐ Flag this question"}</button><button class="btn quiet" id="tReview">Review assessment</button></div></div></div>
+      ${it.map?`<details class="sec"><summary>Map key</summary><div class="legend" style="padding:0 16px 16px">${legendHTML()}</div></details>`:""}`;
+      if(it.map)wireViewer("tMap",T.map,T.views[T.i],null);
+      v.querySelectorAll(".opt[data-qi]").forEach(b=>b.onclick=()=>{T.ans[T.i]=toggleSel(it,T.ans[T.i],b.dataset.o);renderTopo();});
+    }
+    $("#tPrev").onclick=()=>{T.i--;renderTopo();};
+    $("#tNext").onclick=()=>{if(T.i<N-1)T.i++;else T.review=true;renderTopo();};
+    $("#tFlag").onclick=()=>{T.flags[T.i]=!T.flags[T.i];renderTopo();};
+    $("#tReview").onclick=()=>{T.review=true;renderTopo();};
+    topoTick();return;
+  }
+  const R=T.result;const pass=R.total>=60;
+  const rows=T.items.map((it,i)=>{
+    if(it.route){const mk=R.marks[i];return `<div class="card" style="display:grid;gap:12px"><div class="spread"><p class="eyebrow">Q${i+1} · ${esc(it.label)}</p><span class="pill ${mk.pts>=13?"pass":"fail"}">${mk.pts}/22</span></div><p class="task">${taskText(it.task)}</p>${it.task.closedName?`<span class="closure">NOTE: ${esc(it.task.closedName)} was CLOSED.</span>`:""}
+      ${viewerHTML("rv"+i,T.map,{task:it.task,pts:T.ans[i].pts,best:it.task.best,vb:null},"small")}
+      <div class="grid2" style="align-items:start"><div>${markHTML(mk)}</div><div><p class="eyebrow" style="margin-bottom:6px">A most direct route (dotted green)</p>${routeListHTML(writtenRoute(T.map,it.task.best,it.task,true))}</div></div></div>`;}
+    const ok=isRight(it,T.ans[i]);if(ok)return "";
+    return `<div class="card"><p class="eyebrow" style="margin-bottom:6px">Q${i+1}</p>${mcHTML(it,T.ans[i],true,i)}</div>`;
+  }).join("");
+  v.innerHTML=`<div><p class="eyebrow">Topographical mock result</p><div class="row" style="align-items:flex-end;gap:16px"><span class="big">${R.total}</span><span class="note" style="margin-bottom:6px">out of 100</span><span class="pill ${pass?"pass":"fail"}" style="margin-bottom:8px">${pass?"Pass":"Below the pass mark of 60"}</span></div></div>
+    <div class="grid2"><div class="card"><h3>Breakdown</h3><dl class="facts"><dt>Route planning</dt><dd>${R.routePts} / 66</dd><dt>Multiple choice</dt><dd>${R.mcPts} / 34 (${R.mcRight} of ${R.mcN} correct)</dd></dl>
+      <p class="note" style="margin-top:12px">Route marks use this app's practice scheme. TfL's assessors mark by hand and don't publish their exact scheme.</p></div>
+      <div class="card"><h3>Next steps</h3><div class="row" style="margin-top:14px"><button class="btn primary" id="tAgain">New mock</button><button class="btn" id="tPractice">Practise routes</button></div></div></div>
+    <h3>Routes, and questions to check</h3>${rows}`;
+  T.items.forEach((it,i)=>{if(it.route)wireViewer("rv"+i,T.map,{},null,it.task.s);});
+  $("#tAgain").onclick=()=>{T.state="intro";renderTopo();};
+  $("#tPractice").onclick=()=>show("routes");
+}
+
+/* ---------- LONDON KNOWLEDGE ---------- */
+const L={cat:"mixed",round:[],i:0,chosen:null,right:0};
+const DNAME={N:"North",NE:"North-east",E:"East",SE:"South-east",S:"South",SW:"South-west",W:"West",NW:"North-west"};
+const D8=["N","NE","E","SE","S","SW","W","NW"];
+function lq(cat){
+  if(cat==="roads"){const [n,r]=pick(ROADS);if(Math.random()<.5)return{q:`What is the road number of ${r}?`,a:n,opts:[n,...shuffle(ROADS.filter(x=>x[0]!==n)).slice(0,3).map(x=>x[0])],why:`${r} is part of the ${n}.`};
+    return{q:`Which of these roads is part of the ${n}?`,a:r,opts:[r,...shuffle(ROADS.filter(x=>x[0]!==n)).slice(0,3).map(x=>x[1])],why:`${r} is part of the ${n}.`};}
+  if(cat==="places"){const [p,a]=pick(PLACES);const areas=[...new Set(PLACES.map(x=>x[1]))].filter(x=>x!==a&&!x.includes(a)&&!a.includes(x));return{q:`In which area is ${p}?`,a,opts:[a,...shuffle(areas).slice(0,3)],why:`${p} is in ${a}.`};}
+  if(cat==="compass"){const [p,d]=pick(COMPASS);const i=D8.indexOf(d);const wrong=shuffle(D8.filter((x,j)=>{const g=Math.min((j-i+8)%8,(i-j+8)%8);return g>=2;})).slice(0,3);return{q:`From Charing Cross, in which direction is ${p}?`,a:DNAME[d],opts:[DNAME[d],...wrong.map(x=>DNAME[x])],why:`${p} is ${DNAME[d].toLowerCase()} of Charing Cross.`};}
+  return lq(pick(["roads","places","compass"]));
+}
+function newRound(){L.round=Array.from({length:10},()=>{const q=lq(L.cat);q.opts=shuffle(q.opts);return q;});L.i=0;L.chosen=null;L.right=0;}
+function renderLondon(){
+  if(!L.round.length)newRound();
+  const cats=[["mixed","Mixed"],["roads","Road numbers"],["places","Places of interest"],["compass","Compass points"]].map(([k,l])=>`<button class="chip" data-c="${k}" aria-pressed="${L.cat===k}">${l}</button>`).join("");
+  let body;
+  if(L.i>=L.round.length){
+    body=`<div class="card"><p class="eyebrow">Round complete</p><div class="score">${L.right}/10</div><div class="row" style="margin-top:12px"><button class="btn primary" id="lAgain">Play another round</button></div></div>`;
+  }else{
+    const q=L.round[L.i];
+    const opts=q.opts.map((o,k)=>{let c="opt";if(L.chosen!==null){if(o===q.a)c+=" right";else if(o===L.chosen)c+=" wrong";}return `<button class="${c}" data-o="${esc(o)}" ${L.chosen!==null?"disabled":""}><span class="k">${KEYS[k]}</span><span>${esc(o)}</span></button>`;}).join("");
+    body=`<div class="card"><div class="q"><div class="qmeta"><span class="mono">${L.i+1} of 10</span><span>·</span><span class="mono">${L.right} correct</span></div><p class="qtext">${esc(q.q)}</p><div class="opts">${opts}</div>
+      ${L.chosen!==null?`<div class="explain ${L.chosen===q.a?"":"bad"}"><b>${L.chosen===q.a?"Correct":"Answer: "+esc(q.a)}</b>${esc(q.why)}</div>`:""}</div>
+      <div class="row" style="margin-top:16px;justify-content:flex-end"><button class="btn primary" id="lNext" ${L.chosen===null?"disabled":""}>${L.i===9?"See score":"Next"}</button></div></div>`;
+  }
+  $("#v-london").innerHTML=`<div><p class="eyebrow">Topographical</p><h2>London knowledge</h2><p class="lede" style="margin-top:6px">Quick rounds on main road numbers, where well-known places are, and compass directions across London. Useful for the map questions and for working as a driver.</p></div><div class="chips">${cats}</div>${body}`;
+  const v=$("#v-london");
+  v.querySelectorAll("[data-c]").forEach(b=>b.onclick=()=>{L.cat=b.dataset.c;newRound();renderLondon();});
+  v.querySelectorAll("[data-o]").forEach(b=>b.onclick=()=>{if(L.chosen!==null)return;L.chosen=b.dataset.o;const ok=L.chosen===L.round[L.i].a;if(ok)L.right++;S.london.seen++;if(ok)S.london.right++;save();renderLondon();});
+  const n=$("#lNext");if(n)n.onclick=()=>{L.i++;L.chosen=null;renderLondon();};
+  const a=$("#lAgain");if(a)a.onclick=()=>{newRound();renderLondon();};
+}
+
+const RENDER={home:renderHome,seru:renderSeru,mock:renderMock,routes:renderRoutes,topo:renderTopo,london:renderLondon};
+show((location.hash||"").slice(1)||"home");
+window.addEventListener("hashchange",()=>{const h=location.hash.slice(1);if(h&&h!==current)show(h);});
+})();
+</script>
+<script>
+if("serviceWorker" in navigator){window.addEventListener("load",()=>{navigator.serviceWorker.register("sw.js").catch(()=>{});});}
+</script>
+</body>
+</html>
